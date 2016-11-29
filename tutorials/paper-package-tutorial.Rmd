@@ -1,0 +1,115 @@
+---
+title: "Paper package tutorial overview"
+author: "OJ Watson"
+output:
+  html_document:
+  css: knitr.css
+  toc: yes
+pdf_document:
+  toc: yes
+---
+
+## Overview of paper package functionality
+
+  The paper R package has been designed to be an additional tool in helping assist
+with running the "paper outbreak" practical. The package assumes that the data has
+been collected and stored in a similar fashion to that presented within the xls file
+included within the external data directory (the names have been excluded for sensitivity
+reasons), and that the main data from the first sheet in the excel document has been
+exported to a tab delimited .txt file (also included in the external data directory).
+
+  Given the above specificiations, the tutorial below will give an overview of how
+to read in the data and produce a number of plots to help visualise the outbreak and
+present the key epidemiological parameters.
+
+## Loading the data
+
+First we will read in the data from wherever you have stored the .txt file. Below
+we will be using the example included with the package.
+
+```{r Loading the data, include=TRUE, message = FALSE, warning = FALSE}
+
+# First make sure the package is installed
+devtools::install_github("OJWatson/paper")
+
+# With the package installed first read in the data.
+outbreak.dataset <- paper::outbreak_dataset_read(file = system.file("extdata","paper.txt",package="paper"))
+
+# Visualise the dataset
+str(outbreak.dataset)
+
+```
+
+## Create an infection network
+
+For the next task we will need to subset the collected data so that we are only
+looking at those cases that were not reinfections. Using this subset of the data
+we will then be able to plot a number of static images from the network that will
+enable us to seee how the outbreak progressed in time.
+
+```{r Create an infection network, include=TRUE, fig.align = "center"}
+
+# Convert the read outbreak dataset into only the non-reinfections
+first_infection_list <- paper::first_infection_list(outbreak.dataset)
+
+# The above function has now sorted our data into a list of two dataframes. These
+# data frames show the "linelist" and "contacts" data. We can now see that the
+# linelist data only possesses information about contacts that were not reinfections:
+
+unique(first_infection_list$linelist$Reinfection)
+
+# Next we will create a plot of the outbreak that is time-orientated, i.e. the relative
+# node positions represents the point in time that an individual was infected:
+
+paper::infection_network_plot(first_infection_list = first_infection_list, time = TRUE)
+
+# We can also visualise the network in a more "tree" like fashion which shows each
+# infection event with an equal length branch for easier visualisation:
+
+paper::infection_network_plot(first_infection_list = first_infection_list, time = FALSE)
+
+# Lastly we can visualise what the outbreak looked like by viewign the outbreak
+# at the end of each day, i.e. at 24 hour intervals
+
+paper::daily_timeseries_plot(first_infection_list=first_infection_list)
+
+```
+
+## Animate the infection network
+
+So far we have only been able to visualise the outbreak at discrete moments in
+time. To improve this we can also create an html page showing an animation of the
+outbreak process. Ch
+
+```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+# Change the file parameter to wherever you want the html to be stored
+  paper::animate_infection_network(first_infection_list=first_infection_list,
+                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""))
+                            
+```
+
+When you run the above function the animated network will automatically load in
+a web browser and save the html page to file path specified. To view the output 
+of the above function pleasethen click [here](https://goo.gl/mMDcVo)
+
+
+## Epidemiological parameter investigation
+
+Lastly we can examine the distribution of the epidemiological parameters.
+
+```{r Epidemiological parameter investigation, include=TRUE, message = FALSE, warning = FALSE,, fig.align = "center"}
+
+paper::paramater_boxplots_plot(outbreak.dataset=outbreak.dataset,
+                                              title="2016 Outbreak Epidemiological Parameters")
+
+```
+
+## Summary and further thoughts
+
+Hopefully the above tutorial has shown how the paper outbreak practical can be extended
+using R to extend the analysis and aid in visualising the outbreak process.
+
+---
+
+

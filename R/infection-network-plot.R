@@ -44,6 +44,6 @@ infection_network_plot <- function(first_infection_list, time = TRUE){
 
   }
 
-  return(res)
+  #return(res)
 
 }

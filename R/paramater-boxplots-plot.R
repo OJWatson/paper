@@ -40,11 +40,6 @@ paramater_boxplots_plot <- function(outbreak.dataset,title){
                    plot.title = ggplot2::element_text(size = 14, family = "Times New Roman",hjust = 0.5)) +
     ggplot2::ggtitle(title)
 
-  # print output before returning ggplot object
-  suppressWarnings(
-    print(res)
-  )
-
   return(res)
 
 }
