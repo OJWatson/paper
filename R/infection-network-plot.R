@@ -1,0 +1,49 @@
+#' Plots infection network
+#'
+#' \code{infection_network_plot} takes output of \code{first_infection_list} and
+#' plots either a time accurate network, or a "tree" network with equal branches.
+#'
+#' @param first_infection_list Infection list outputted by \code{first_infection_list}
+#' @param time Boolean dictating is time accurate network is output. If FALSE then
+#' "tree" network with equal branches is plotted. Default = TRUE
+#'
+#' @export
+#'
+#'
+#'
+
+infection_network_plot <- function(first_infection_list, time = TRUE){
+
+  # convert into graph
+  outbreak.graph <- igraph::graph_from_data_frame(first_infection_list$contacts,directed = TRUE,
+                                                  vertices = first_infection_list$linelist)
+  if(time){
+
+    # time orientated layout
+    lay <- igraph::layout_with_fr(outbreak.graph, minx=log(first_infection_list$linelist$Infection_Hours.since.start),
+                                  maxx=log(first_infection_list$linelist$Infection_Hours.since.start),niter=100000,
+                                  miny=rep(-Inf,length(first_infection_list$linelist$Infection_Hours.since.start)),
+                                  maxy=rep(Inf,length(first_infection_list$linelist$Infection_Hours.since.start)))
+
+    # create igraph using graph and layout
+    res <- igraph::plot.igraph(outbreak.graph, layout=lay,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.2,vertex.label=NA,
+                               vertex.color="red",edge.color="black")
+
+  } else {
+
+    # tree orientated layout
+    tree <- igraph::layout_as_tree(outbreak.graph,root = 1:3)
+
+    # create igraph using graph and tree layout
+    res <-  igraph::plot.igraph(outbreak.graph, layout=tree,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.2,vertex.label=NA,
+                                vertex.color="red",edge.color="black")
+
+    # view in tkplot to alter as needed before exporting and editing in inkscape
+    # Only to be used if the iteration in the plot above is unsatisfactory for limiting cross over
+    # tkplot(paper.graph, layout=lay,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.4,vertex.label=NA)
+
+  }
+
+  return(res)
+
+}
