@@ -3,8 +3,8 @@ title: "Paper package tutorial overview"
 author: "OJ Watson"
 output:
   html_document:
-  css: knitr.css
   toc: yes
+  css: knitr.css
 pdf_document:
   toc: yes
 ---
@@ -68,7 +68,7 @@ paper::infection_network_plot(first_infection_list = first_infection_list, time 
 
 paper::infection_network_plot(first_infection_list = first_infection_list, time = FALSE)
 
-# Lastly we can visualise what the outbreak looked like by viewign the outbreak
+# Lastly we can visualise what the outbreak looked like by viewing the outbreak
 # at the end of each day, i.e. at 24 hour intervals
 
 paper::daily_timeseries_plot(first_infection_list=first_infection_list)
@@ -79,7 +79,7 @@ paper::daily_timeseries_plot(first_infection_list=first_infection_list)
 
 So far we have only been able to visualise the outbreak at discrete moments in
 time. To improve this we can also create an html page showing an animation of the
-outbreak process. Ch
+outbreak process. 
 
 ```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
