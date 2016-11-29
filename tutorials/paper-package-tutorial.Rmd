@@ -91,7 +91,7 @@ outbreak process. Ch
 
 When you run the above function the animated network will automatically load in
 a web browser and save the html page to file path specified. To view the output 
-of the above function pleasethen click [here](https://goo.gl/mMDcVo)
+of the above function please then click [here](https://cdn.rawgit.com/OJWatson/paper/master/tutorials/Animated-Network-Dynamic.html)
 
 
 ## Epidemiological parameter investigation

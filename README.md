@@ -6,6 +6,8 @@
 
 Collection of functions designed to ease analaysis of the paper outbreak practical within R.
 
+To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/master/tutorials/paper-package-tutorial.html).
+
 ## Installing *scraper* devel
 
 To install the development version from github (the package *devtools is required*):
