@@ -6,7 +6,7 @@
 
 Collection of functions designed to ease analaysis of the paper outbreak practical within R.
 
-To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/42e5cf0e19d9807a4c49d2663da66679b949a3a9/tutorials/paper-package-tutorial.html).
+To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/d7620eef7fc0dbbdf279ccaa7ed62625a0cafbd7/tutorials/paper-package-tutorial.html).
 
 ## Installing *scraper* devel
 
