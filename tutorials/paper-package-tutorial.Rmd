@@ -39,7 +39,7 @@ outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdat
 str(outbreak.dataset)
 
 # This dataset is also saved within the paper package and can be accessed as such:
-data("paper.outbreak.2016")
+data("paper.outbreak.2016",package="paper")
 str(paper.outbreak.2016)
 ```
 
