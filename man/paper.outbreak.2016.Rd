@@ -21,10 +21,10 @@
       \item End_Infection_Time: Time of end of infection
       \item End_Infection_Hours.since.start: Total hours since start of outbreak till end of infection
       \item Onward_Infection_Hours.since.start: Total hours since start of outbreak till onward infection
+      \item Generation_Time_Hours: Generation time in hours
       \item Latent_Period_Hours: Latent period in hours
       \item Incubation_Period_Hours: Incubation period in hours
       \item Infectious_Period_Hours: Infectious period in hours
-      \item Generation_Time_Hours: Generation time in hours
     }}
 \usage{
 paper.outbreak.2016
@@ -40,8 +40,6 @@ This dataset is meant for teaching purposes; it  does not represent a real outbr
 ## show the line list describing paper outbreak cases and their attributes
 str(paper.outbreak.2016)
 
-## show the relationships between paper outbreak cases
-head(paper.outbreak.2016$contacts)
 
 }
 \author{
@@ -50,6 +48,7 @@ Mr Oliver Watson (\email{o.watson15@imperial.ac.uk})
 }
 \references{
 More information on the outbreak in the following reference:
+TBA
 }
 \keyword{datasets}
 
