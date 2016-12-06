@@ -4,9 +4,13 @@
 \alias{outbreak_dataset_read}
 \title{Read in and remove sensitive data}
 \usage{
-outbreak_dataset_read(file)
+outbreak_dataset_read(xlsx.file)
+}
+\arguments{
+\item{xlsx.file}{Full file path to where xlsx Outbreak dataset is stored.}
 }
 \description{
-\code{outbreak_dataset_read} reads data from outbreak practical file and fills in ID blanks
+\code{outbreak_dataset_read} reads data from outbreak practical file and fills in ID blanks.
+See inst/extdata for examples of how the excel files should look like before importing.
 }
 

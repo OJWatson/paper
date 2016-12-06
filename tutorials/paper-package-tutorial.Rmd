@@ -13,10 +13,9 @@ pdf_document:
 
   The paper R package has been designed to be an additional tool in helping assist
 with running the "paper outbreak" practical. The package assumes that the data has
-been collected and stored in a similar fashion to that presented within the xls file
-included within the external data directory (the names have been excluded for sensitivity
-reasons), and that the main data from the first sheet in the excel document has been
-exported to a tab delimited .txt file (also included in the external data directory).
+been collected and stored in a similar fashion to that presented within the xlsx file
+included within the external data directory, and that the main data from the first 
+sheet in the excel document, between cell A2:Oxxx, is to be used.
 
   Given the above specificiations, the tutorial below will give an overview of how
 to read in the data and produce a number of plots to help visualise the outbreak and
@@ -24,8 +23,9 @@ present the key epidemiological parameters.
 
 ## Loading the data
 
-First we will read in the data from wherever you have stored the .txt file. Below
-we will be using the example included with the package.
+First we will read in the data from wherever you have stored the .xlsx file. Below
+we will be using the example included with the package. The output of the following
+section is stored within the package as well. 
 
 ```{r Loading the data, include=TRUE, message = FALSE, warning = FALSE}
 
@@ -33,11 +33,14 @@ we will be using the example included with the package.
 devtools::install_github("OJWatson/paper")
 
 # With the package installed first read in the data.
-outbreak.dataset <- paper::outbreak_dataset_read(file = system.file("extdata","paper.txt",package="paper"))
+outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdata","2016_OUTBREAK.xlsx",package="paper"))
 
 # Visualise the dataset
 str(outbreak.dataset)
 
+# This dataset is also saved within the paper package and can be accessed as such:
+data("paper.outbreak.2016")
+str(paper.outbreak.2016)
 ```
 
 ## Create an infection network

@@ -17,6 +17,7 @@ Imports:
     ggplot2,
     igraph,
     reshape2,
+    XLConnect,
     extrafont,
 License: GPL 2.0
 LazyData: TRUE
