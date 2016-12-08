@@ -6,7 +6,7 @@
 
 Collection of functions designed to ease analaysis of the paper outbreak practical within R.
 
-To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/85203291f898c2f5c595adbb76f5c85554dbe924/tutorials/paper-package-tutorial.html).
+To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/5534d22a243ef8ed7dc52f8a2c798ee2f76357ee/tutorials/paper-package-tutorial.html).
 
 ## Installing *paper* devel
 
