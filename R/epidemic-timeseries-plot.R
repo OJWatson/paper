@@ -29,7 +29,7 @@ epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
   epidemics$I <- N - epidemics$R - epidemics$S
 
   # Reshape the data for ggploting
-  melt <- reshape2::melt(epidemics.df,id="Times")
+  melt <- reshape2::melt(epidemics,id="Times")
 
   # Load required fonts
   extrafont::loadfonts(device = "win",quiet=T)
