@@ -13,7 +13,7 @@ To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/5
 To install the development version from github (the package *devtools is required*).
 
 Note that on Windows, a toolkit ([Rtools](https://cran.r-project.org/bin/windows/Rtools/)) needs to be installed separately for *devtools* to work.  
-For a guide on how to install devtools please see the following ([guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows)).
+For a guide on how to install devtools please see the following [guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows).
 
 ```r
 install.packages("devtools")
