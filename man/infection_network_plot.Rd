@@ -4,13 +4,20 @@
 \alias{infection_network_plot}
 \title{Plots infection network}
 \usage{
-infection_network_plot(first_infection_list, time = TRUE)
+infection_network_plot(first_infection_list, time = TRUE, log = TRUE,
+  iterations = 10000)
 }
 \arguments{
 \item{first_infection_list}{Infection list outputted by \code{first_infection_list}}
 
 \item{time}{Boolean dictating is time accurate network is output. If FALSE then
 "tree" network with equal branches is plotted. Default = TRUE}
+
+\item{log}{Boolean that determines if the times of infection are log transformed to
+improve the visualisation of the non-tree plot. Default = TRUE}
+
+\item{iterations}{Numeric detailing the number igraph iterations run when calculating
+optimum layout. Default = 10000}
 }
 \description{
 \code{infection_network_plot} takes output of \code{first_infection_list} and

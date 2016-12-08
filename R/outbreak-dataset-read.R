@@ -36,7 +36,14 @@ df$Infectious_Period_Hours <- df$End_Infection_Hours.since.start - df$Onward_Inf
 df$Generation_Time_Hours <- df$Infection_Hours.since.start - df$Infection_Hours.since.start[match(df$Parent.ID,df$ID)]
 
 # Remove errors in Generation Times
+error.pos <- which(df$Generation_Time_Hours<0)
+if(length(error.pos)>0){
+
 df$Generation_Time_Hours[df$Generation_Time_Hours<0] <- NA
+message(paste("Warning: Some negative generation times were recorded and subsequently
+              removed. Please check rows ",paste(error.pos,collapse = ", ")))
+
+}
 
 # Format data to include all necessary contacts, i.e. fill in id number in columns where omitted
 counter <- 0

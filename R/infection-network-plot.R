@@ -6,25 +6,36 @@
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param time Boolean dictating is time accurate network is output. If FALSE then
 #' "tree" network with equal branches is plotted. Default = TRUE
+#' @param log Boolean that determines if the times of infection are log transformed to
+#' improve the visualisation of the non-tree plot. Default = TRUE
+#' @param iterations Numeric detailing the number igraph iterations run when calculating
+#' optimum layout. Default = 10000
 #'
 #' @export
 #'
 #'
 #'
 
-infection_network_plot <- function(first_infection_list, time = TRUE){
+infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,iterations = 10000){
 
   # convert into graph
   outbreak.graph <- igraph::graph_from_data_frame(first_infection_list$contacts,directed = TRUE,
                                                   vertices = first_infection_list$linelist)
   if(time){
 
-    # time orientated layout
-    lay <- igraph::layout_with_fr(outbreak.graph, minx=log(first_infection_list$linelist$Infection_Hours.since.start),
-                                  maxx=log(first_infection_list$linelist$Infection_Hours.since.start),niter=100000,
-                                  miny=rep(-Inf,length(first_infection_list$linelist$Infection_Hours.since.start)),
-                                  maxy=rep(Inf,length(first_infection_list$linelist$Infection_Hours.since.start)))
+    if(log){
+      # time orientated layout
+      lay <- igraph::layout_with_fr(outbreak.graph, minx=log(first_infection_list$linelist$Infection_Hours.since.start),
+                                    maxx=log(first_infection_list$linelist$Infection_Hours.since.start),niter=iterations,
+                                    miny=rep(-Inf,length(first_infection_list$linelist$Infection_Hours.since.start)),
+                                    maxy=rep(Inf,length(first_infection_list$linelist$Infection_Hours.since.start)))
+    } else {
+      lay <- igraph::layout_with_fr(outbreak.graph, minx=(first_infection_list$linelist$Infection_Hours.since.start),
+                                    maxx=(first_infection_list$linelist$Infection_Hours.since.start),niter=iterations,
+                                    miny=rep(-Inf,length(first_infection_list$linelist$Infection_Hours.since.start)),
+                                    maxy=rep(Inf,length(first_infection_list$linelist$Infection_Hours.since.start)))
 
+    }
     # create igraph using graph and layout
     res <- igraph::plot.igraph(outbreak.graph, layout=lay,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.2,vertex.label=NA,
                                vertex.color="red",edge.color="black")
@@ -40,10 +51,10 @@ infection_network_plot <- function(first_infection_list, time = TRUE){
 
     # view in tkplot to alter as needed before exporting and editing in inkscape
     # Only to be used if the iteration in the plot above is unsatisfactory for limiting cross over
-    # tkplot(paper.graph, layout=lay,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.4,vertex.label=NA)
+    # igraph::tkplot(outbreak.graph, layout=lay,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.4,vertex.label=NA)
 
   }
 
-  #return(res)
+
 
 }

@@ -8,22 +8,25 @@ Collection of functions designed to ease analaysis of the paper outbreak practic
 
 To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/85203291f898c2f5c595adbb76f5c85554dbe924/tutorials/paper-package-tutorial.html).
 
-## Installing *scraper* devel
+## Installing *paper* devel
 
-To install the development version from github (the package *devtools is required*):
+To install the development version from github (the package *devtools is required*).
 
-  ```r
+Note that on Windows, a toolkit ([Rtools](https://cran.r-project.org/bin/windows/Rtools/)) needs to be installed separately for *devtools* to work.  
+For a guide on how to install devtools please see the following ([guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows)).
+
+```r
+install.packages("devtools")
 library(devtools)
 install_github("OJWatson/paper")
 ```
-Note that on Windows, a toolkit ([Rtools](https://cran.r-project.org/bin/windows/Rtools/)) needs to be installed separately for *devtools* to work.
 
 Once installed, the package can be loaded using:
 
-  ```r
+```r
 library(paper)
 ```
 
 ## Asking a question
 
-- for bug reports, feature requests, contributions, use github's [issue system](https://github.com/OJWatson/paper/issues)
+- for bug reports, feature requests, contributions, use github's [issue system.](https://github.com/OJWatson/paper/issues)

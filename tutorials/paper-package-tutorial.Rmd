@@ -96,12 +96,23 @@ When you run the above function the animated network will automatically load in
 a web browser and save the html page to file path specified. To view the output 
 of the above function please then click [here](https://cdn.rawgit.com/OJWatson/paper/master/tutorials/Animated-Network-Dynamic.html)
 
+## Epidemic Time Series
+
+We can also use the collected data to plot the epidemic time series, using the times
+recorded for when the infection started and ended in each individual.
+
+```{r Epidemic Time Series, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+paper::epidemic_timeseries_plot(first_infection_list = first_infection_list,
+                                              title="2016 Outbreak SIR Curve")
+
+```
 
 ## Epidemiological parameter investigation
 
 Lastly we can examine the distribution of the epidemiological parameters.
 
-```{r Epidemiological parameter investigation, include=TRUE, message = FALSE, warning = FALSE,, fig.align = "center"}
+```{r Epidemiological parameter investigation, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
 paper::paramater_boxplots_plot(outbreak.dataset=outbreak.dataset,
                                               title="2016 Outbreak Epidemiological Parameters")
