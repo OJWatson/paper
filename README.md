@@ -1,4 +1,5 @@
 # paper
+[![Build Status](https://travis-ci.org/OJWatson/paper.png?branch=master)](https://travis-ci.org/OJWatson/paper)
 
 > Demonstration of analysis associated to "paper outbreak" teaching practical
 
