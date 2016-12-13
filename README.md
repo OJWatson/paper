@@ -1,5 +1,6 @@
 # paper
 [![Build Status](https://travis-ci.org/OJWatson/paper.png?branch=master)](https://travis-ci.org/OJWatson/paper)
+N.B. CRAN build fail due to warning from ndtv package compute.animation namespace load requirement - otherwise passes.
 
 > Demonstration of analysis associated to "paper outbreak" teaching practical
 
@@ -7,7 +8,7 @@
 
 Collection of functions designed to ease analaysis of the paper outbreak practical within R.
 
-To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/5534d22a243ef8ed7dc52f8a2c798ee2f76357ee/tutorials/paper-package-tutorial.html).
+To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/9126a8bedbd62f59782915e3025ec201ba79c7fa/tutorials/paper-package-tutorial.html).
 
 ## Installing *paper* devel
 
