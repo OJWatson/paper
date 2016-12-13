@@ -13,6 +13,12 @@
 
 epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
 
+  # Function to generate ggplot colours
+  gg_color_hue <- function(n) {
+    hues = seq(15, 375, length = n + 1)
+    hcl(h = hues, l = 65, c = 100)[1:n]
+  }
+
   # Create vector of unique times when events occure, i.e. infection and recovery
   times <- c(0,sort(unique(c(first_infection_list$linelist$Infection_Hours.since.start,
                              first_infection_list$linelist$End_Infection_Hours.since.start))))
@@ -41,16 +47,16 @@ epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
     ggplot2::xlab("Time (hours)") +
     ggplot2::ylab("Number of Students") +
     ggplot2::theme_classic() + ggplot2::theme_light() +
-    ggplot2::theme(legend.position="none",
-                    axis.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
                    axis.title.y = ggplot2::element_text(margin=ggplot2::margin(c(0,10)),size = 14, family = "Times New Roman"),
                    axis.title.x = ggplot2::element_text(margin=ggplot2::margin(c(10)),size = 14, family = "Times New Roman"),
                    legend.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
                    legend.title = ggplot2::element_text(size = 14, family = "Times New Roman"),
                    plot.title = ggplot2::element_text(size = 14, family = "Times New Roman",hjust = 0.5),
                    panel.grid.minor.x = ggplot2::element_blank()) +
-    ggplot2::scale_color_discrete(limit = c("S","I","R"),
+    ggplot2::scale_color_manual(limit = c("S","I","R"),
                                   labels = c("S","I","R"),
+                                  values = gg_color_hue(3)[c(3,1,2)],
                                   name = "Infection\nStatus")
 
   if(!is.null(title)){
