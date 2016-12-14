@@ -47,7 +47,7 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
   )
 
   # load ndtv
-  suppressWarnings(suppressMessages(library(ndtv)))
+  # suppressWarnings(suppressMessages(library(ndtv)))
 
   # precompute animation slices
   ndtv::compute.animation(paper.net.dyn, animation.mode = "kamadakawai",
