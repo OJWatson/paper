@@ -1,14 +1,13 @@
 # paper
 [![Build Status](https://travis-ci.org/OJWatson/paper.png?branch=master)](https://travis-ci.org/OJWatson/paper)
 
-
 > Demonstration of analysis associated to "paper outbreak" teaching practical
 
 ## What is this?
 
 Collection of functions designed to ease analaysis of the paper outbreak practical within R.
 
-To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/9126a8bedbd62f59782915e3025ec201ba79c7fa/tutorials/paper-package-tutorial.html).
+To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/cd02199d4c8f473b9acca9d06661a6bf026289e0/tutorials/paper-package-tutorial.html).
 
 ## Installing *paper* devel
 
