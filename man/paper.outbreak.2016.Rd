@@ -43,7 +43,7 @@ str(paper.outbreak.2016)
 
 }
 \author{
-Data collected by Dr Íde Cremin (\email{ide.cremin05@imperial.ac.uk}), and collated by
+Data collected by Dr Ide Cremin (\email{ide.cremin05@imperial.ac.uk}), and collated by
 Mr Oliver Watson (\email{o.watson15@imperial.ac.uk})
 }
 \references{
