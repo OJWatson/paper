@@ -1,6 +1,6 @@
 # paper
 [![Build Status](https://travis-ci.org/OJWatson/paper.png?branch=master)](https://travis-ci.org/OJWatson/paper)
-N.B. CRAN build fail due to warning from ndtv package compute.animation namespace load requirement - otherwise passes.
+
 
 > Demonstration of analysis associated to "paper outbreak" teaching practical
 

@@ -32,6 +32,9 @@ section is stored within the package as well.
 # First make sure the package is installed
 devtools::install_github("OJWatson/paper")
 
+# Load package
+library(paper)
+
 # With the package installed first read in the data.
 outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdata","2016_OUTBREAK.xlsx",package="paper"))
 
@@ -88,7 +91,8 @@ outbreak process.
 
 # Change the file parameter to wherever you want the html to be stored
   paper::animate_infection_network(first_infection_list=first_infection_list,
-                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""))
+                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
+                            detach=FALSE)
                             
 ```
 
