@@ -12,9 +12,7 @@ Paper is a package designed to assist in demonstration of analysis associated to
 
 To install the development version from github the package [*devtools*](https://github.com/hadley/devtools) is required.
 
-Install the release version of devtools from CRAN with install.packages("devtools").
-
-Make sure you have a working development environment.
+In order to install devtools you need to make sure you have a working development environment:
 
 1. Windows: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).For a guide on how to install devtools please see the following [guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows).
 
@@ -22,16 +20,16 @@ Make sure you have a working development environment.
 
 3. Linux: Install a compiler and various development libraries (details vary across different flavors of Linux).
 
+Once a working development environment is ready, then devtools can be installed from CRAN:
 
 ```r
 install.packages("devtools")
 library(devtools)
-install_github("OJWatson/paper")
 ```
-
-Once installed, the package can be loaded using:
+Once installed, the package can be installed and loaded using:
 
 ```r
+install_github("OJWatson/paper")
 library(paper)
 ```
 
