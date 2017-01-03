@@ -14,11 +14,11 @@ To install the development version from github the package [*devtools*](https://
 
 In order to install devtools you need to make sure you have a working development environment:
 
-1. Windows: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). For help on how to install devtools please see the following [guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows).
+1. **Windows**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). For help on how to install devtools please see the following [guide](https://github.com/stan-dev/rstan/wiki/Install-Rtools-for-Windows).
 
-2. Mac: Install Xcode from the Mac App Store.
+2. **Mac**: Install Xcode from the Mac App Store.
 
-3. Linux: Install a compiler and various development libraries (details vary across different flavors of Linux).
+3. **Linux**: Install a compiler and various development libraries (details vary across different flavors of Linux).
 
 Once a working development environment is ready, then devtools can be installed from CRAN:
 
