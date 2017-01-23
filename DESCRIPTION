@@ -19,7 +19,8 @@ Imports:
     reshape2,
     XLConnect,
     extrafont,
-    statnet.common
+    statnet.common,
+    base64
 License: GPL 2.0
 LazyData: TRUE
 RoxygenNote: 5.0.1
