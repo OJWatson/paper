@@ -15,6 +15,7 @@ Imports:
     animation (>= 2.4),
     sna,
     ggplot2,
+    scales (>= 0.4.1),
     igraph,
     reshape2,
     XLConnect,
