@@ -21,10 +21,10 @@
       \item End_Infection_Time: Time of end of infection
       \item End_Infection_Hours.since.start: Total hours since start of outbreak till end of infection
       \item Onward_Infection_Hours.since.start: Total hours since start of outbreak till onward infection
-      \item Generation_Time_Hours: Generation time in hours
       \item Latent_Period_Hours: Latent period in hours
       \item Incubation_Period_Hours: Incubation period in hours
       \item Infectious_Period_Hours: Infectious period in hours
+      \item Generation_Time_Hours: Generation time in hours
     }}
 \usage{
 paper.outbreak.2016
