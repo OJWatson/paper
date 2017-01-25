@@ -11,7 +11,7 @@
 #' @param seed.hour Hour at which seeding of epidemic begins. Default = 9
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param outbreak.dataset Outbreak dataset outputted by \code{outbreak_dataset_read}
-#' @param replicates. Numerical describing number of bootstrap replicates. Default = 2000
+#' @param replicates Numerical describing number of bootstrap replicates. Default = 2000
 #' @param lower.quantile Numeric between 0 and 0.5 describing the lower quantile for
 #' each trace. Default = 0.25
 #' @param upper.quantile Numeric between 0.5 and 1 describing the lower quantile for

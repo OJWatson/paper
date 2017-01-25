@@ -22,6 +22,8 @@ bootstrap_simulated_plot(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
 
 \item{outbreak.dataset}{Outbreak dataset outputted by \code{outbreak_dataset_read}}
 
+\item{replicates}{Numerical describing number of bootstrap replicates. Default = 2000}
+
 \item{lower.quantile}{Numeric between 0 and 0.5 describing the lower quantile for
 each trace. Default = 0.25}
 
@@ -39,8 +41,6 @@ quantiles. Default = TRUE}
 
 \item{include.observed}{Boolean describing whether to include the observed epidemic
 alongisde the simulated epidemic. If this is true, N will be calculated from outbreak.dataset}
-
-\item{replicates.}{Numerical describing number of bootstrap replicates. Default = 2000}
 }
 \description{
 \code{bootstrap_simulated_plot} takes output of \code{first_infection_list} and
