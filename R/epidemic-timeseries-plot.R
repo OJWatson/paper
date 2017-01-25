@@ -1,7 +1,7 @@
 #' Plot epidemic time series
 #'
 #' \code{epidemic_timeseries_plot} takes output of \code{first_infection_list} and
-#' plots SIR epidemic time series.
+#' plots SIR epidemic time series. Returns ggplot object for plotting.
 #'
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param title Plot title. If NULL then no title will be added. Defult = NULL
@@ -53,7 +53,9 @@ epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
                    legend.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
                    legend.title = ggplot2::element_text(size = 14, family = "Times New Roman"),
                    plot.title = ggplot2::element_text(size = 14, family = "Times New Roman",hjust = 0.5),
-                   panel.grid.minor.x = ggplot2::element_blank()) +
+                   panel.grid = ggplot2::element_blank(),
+                   panel.border = ggplot2::element_blank(),
+                   axis.line = ggplot2::element_line()) +
     ggplot2::scale_color_manual(limit = c("S","I","R"),
                                   labels = c("S","I","R"),
                                   values = gg_color_hue(3)[c(3,1,2)],

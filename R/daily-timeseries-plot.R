@@ -39,14 +39,15 @@ daily_timeseries_plot <- function(first_infection_list){
   events <- sort(unique(as.data.frame(Dyn)[,]))
 
   # create graphical parameters
-  par(mai = c(1,0,0,0),cex.lab=2)
-  par(mfrow=c(1,5))
+  par(mai = c(0.8,0,0,0),oma=c(10,0,0,0),cex.main=0.5,cex.lab=2.5)
 
 
-  ndtv::filmstrip(Dyn, displaylabels=F,
+  res <- ndtv::filmstrip(Dyn, displaylabels=F,
                   slice.par=list(start=0, end=119,interval=24,
-                                 aggregate.dur=24, rule='latest'),mfrow=c(1,5),vertex.cex=1.5,
+                                 aggregate.dur=24, rule='latest',title="a"),
+                  mfrow=c(1,5),vertex.cex=1.5,
                   vertex.col = "color")
+
 
 
 }

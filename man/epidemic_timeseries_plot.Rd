@@ -13,6 +13,6 @@ epidemic_timeseries_plot(first_infection_list, title = NULL)
 }
 \description{
 \code{epidemic_timeseries_plot} takes output of \code{first_infection_list} and
-plots SIR epidemic time series.
+plots SIR epidemic time series. Returns ggplot object for plotting.
 }
 

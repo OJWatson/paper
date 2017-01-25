@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/OJWatson/paper.png?branch=master)](https://travis-ci.org/OJWatson/paper)
 
-## What is this?
+### What is this?
 
 Paper is a package designed to assist in demonstration of analysis associated to "paper outbreak" teaching practical. It is a collection of functions designed to ease analaysis of the paper outbreak practical within R. This includes importing and cleaning data from an excel sheet, viewing the infection network, visualising the outbreak as an animation, and calculating the epidemiological parameters associated with the practical.
 
+***
 > To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/cd02199d4c8f473b9acca9d06661a6bf026289e0/tutorials/paper-package-tutorial.html).
 
-## Installing *paper* devel
+***
+### Installing *paper*
 
 To install the development version from github the package [*devtools*](https://github.com/hadley/devtools) is required.
 
@@ -33,6 +35,24 @@ install_github("OJWatson/paper")
 library(paper)
 ```
 
-## Asking a question
+***
+### Troubleshoot Guide
+
+1. If you are installing the package outside of RStudio or an IDE that enables write access then try launching your IDE as an administrator. 
+
+2. When installing the package to a library/shared computer you may see the following error:
+```r
+"Error in unzip(src, list = TRUE) : 'exdir' does not exist".
+```
+This error is thrown when the default temporary directory where the package unzips to is not writeable. To fix this, first close all instances of R / RStudio and open Command Prompt and enter the following:
+```r
+R
+Sys.setenv(c("TMP","TEMP","TMPDIR") = "C:/Users/User/Desktop")
+```
+Now, open a new RStudio window and you should be able to install the package. 
+
+***
+
+#### Asking a question
 
 For bug reports, feature requests, contributions, use github's [issue system.](https://github.com/OJWatson/paper/issues)
