@@ -21,6 +21,13 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
   # convert into graph
   outbreak.graph <- igraph::graph_from_data_frame(first_infection_list$contacts,directed = TRUE,
                                                   vertices = first_infection_list$linelist)
+
+  ## for the sake of clean plotting let's allocate the individuals who were not infected an infection
+  ## time that is 5 larger than the max infection, so that they appear on the graph cleanly:
+
+  first_infection_list$linelist$Infection_Hours.since.start[is.na(first_infection_list$linelist$Infection_Hours.since.start)] <-
+    max(first_infection_list$linelist$Infection_Hours.since.start,na.rm=TRUE) + 5
+
   if(time){
 
     if(log){
@@ -43,7 +50,7 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
   } else {
 
     # tree orientated layout
-    tree <- igraph::layout_as_tree(outbreak.graph,root = 1:3)
+    tree <- igraph::layout_as_tree(outbreak.graph,root = 1:3,rootlevel = rep(1,3))
 
     # create igraph using graph and tree layout
     res <-  igraph::plot.igraph(outbreak.graph, layout=tree,vertex.size=6,edge.arrow.width=1,edge.arrow.size=0.2,vertex.label=NA,

@@ -23,9 +23,21 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
     file <- paste(file,".html",sep="")
   }
 
+  # first we have to ammend those who were never infected to have timing of start and end infection to be infinity
+  uninfected <- which(is.na(first_infection_list$linelist$Infection_Hours.since.start))
+  first_infection_list$linelist[uninfected,]$Infection_Hours.since.start <- Inf
+  first_infection_list$linelist[uninfected,]$End_Infection_Hours.since.start <- Inf
+
+
   # create initially network so that node colors can be added to the vertices
   paper.net <- network::network(first_infection_list$contacts,  vertex.attr=first_infection_list$linelist, matrix.type="edgelist",
                                 loops=F, multiple=F, ignore.eval = F)
+
+  # Now add the vertices that have no contacts
+  network::add.vertices(paper.net, nv = length(uninfected))
+
+  # And set their ID attributes
+  set.vertex.attribute(paper.net,"ID",value = uninfected,v = uninfected)
 
   # add vertex color attributes related to onset of infection and recovery
   networkDynamic::activate.vertex.attribute(paper.net,"color","blue",onset=-Inf,terminus=Inf)
@@ -38,20 +50,17 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
   paper.net.dyn <- networkDynamic::networkDynamic(
     base.net = paper.net,
     edge.spells=data.frame("onset" = first_infection_list$contacts$Infection_Hours.since.start,
-                           "terminus" = max(first_infection_list$linelist$End_Infection_Hours.since.start),
+                           "terminus" = range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2],
                            "tail"=first_infection_list$contacts$From,
                            "head"=first_infection_list$contacts$To),
     vertex.spells=data.frame(onset=0,
-                             terminus=max(first_infection_list$linelist$End_Infection_Hours.since.start),
+                             terminus=range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2],
                              vertex.id=1:dim(first_infection_list$linelist)[1])
   )
 
-  # load ndtv
-  # suppressWarnings(suppressMessages(library(ndtv)))
-
   # precompute animation slices
   ndtv::compute.animation(paper.net.dyn, animation.mode = "kamadakawai",
-                          slice.par=list(start=0,end=max(first_infection_list$linelist$End_Infection_Hours.since.start),
+                          slice.par=list(start=0,end=range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2],
                                          interval=1, aggregate.dur=1, rule='latest'),
                           vertex.col="color")
 
@@ -64,13 +73,5 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
                        plot.par=list(mar=c(0,0,0,0)),
                        main = "Outbreak Dynamics 2016. Susceptible (blue), Infected (red), Recovered (green)",
                        cex.main = 2)
-
-  if(detach){
-  invisible(
-    Vectorize(detach)(name=paste0("package:", c("ndtv","sna","animation",
-                                              "networkDynamic","network","statnet.common")),
-                    unload=TRUE, character.only=TRUE)
-  )
-  }
 
 }

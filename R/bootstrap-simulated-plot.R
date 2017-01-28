@@ -120,7 +120,7 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
                    legend.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
                    legend.title = ggplot2::element_text(size = 14, family = "Times New Roman"),
                    plot.title = ggplot2::element_text(size = 14, family = "Times New Roman",hjust = 0.5),
-                   panel.grid.minor.x = ggplot2::element_blank(),
+                   panel.grid = ggplot2::element_blank(),
                    panel.border = ggplot2::element_blank(),
                    axis.line = ggplot2::element_line()) +
     ggplot2::scale_color_manual(limit = c("S","I","R"),

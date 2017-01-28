@@ -4,6 +4,7 @@
 #' plots SIR epidemic time series. Returns ggplot object for plotting.
 #'
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
+#' @param N Total population size.
 #' @param title Plot title. If NULL then no title will be added. Defult = NULL
 #'
 #' @export
@@ -11,7 +12,7 @@
 #'
 #'
 
-epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
+epidemic_timeseries_plot <- function(first_infection_list,N,title=NULL){
 
   # Function to generate ggplot colours
   gg_color_hue <- function(n) {
@@ -22,6 +23,11 @@ epidemic_timeseries_plot <- function(first_infection_list,title=NULL){
   # Create vector of unique times when events occure, i.e. infection and recovery
   times <- c(0,sort(unique(c(first_infection_list$linelist$Infection_Hours.since.start,
                              first_infection_list$linelist$End_Infection_Hours.since.start))))
+
+  # Now we have the finite times we can set those who were never infected to have infinite times of infections
+  uninfected <- which(is.na(first_infection_list$linelist$Infection_Hours.since.start))
+  first_infection_list$linelist[uninfected,]$Infection_Hours.since.start <- Inf
+  first_infection_list$linelist[uninfected,]$End_Infection_Hours.since.start <- Inf
 
   # Work out size of population
   N <- dim(first_infection_list$linelist)[1]

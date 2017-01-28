@@ -33,7 +33,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   R <- 0
 
   # Create vector of all discrete times from 0 to end of infection list
-  times <- c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start))
+  times <- c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start,na.rm = TRUE))
 
   # Create result vectors
   Sv <- rep(S,length(times))
@@ -51,7 +51,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   Incubation_Times <- outbreak.dataset$Incubation_Period_Hours
 
   ## Distribtuion means for recovery, generation times
-  mean.recovery.time <- mean(Recovery_Times)  ## mean for poisson distribution describing average recovery time in hours
+  mean.recovery.time <- mean(Recovery_Times,na.rm=T)  ## mean for poisson distribution describing average recovery time in hours
   mean.generation.time <- mean(Generation_Times,na.rm = T)  ## mean for poisson distribution describing average generation time in hours
 
   ## Handle seed time if provided
