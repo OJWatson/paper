@@ -4,14 +4,13 @@
 #' See inst/extdata for examples of how the excel files should look like before importing.
 #'
 #' @param xlsx.file Full file path to where xlsx Outbreak dataset is stored.
-#' @param include.uninfected Boolean determining whether to include uninfecteds. Default
 #'
 #' @export
 #'
 #'
 #'
 
-outbreak_dataset_read <- function(xlsx.file,include.uninfected=FALSE){
+outbreak_dataset_read <- function(xlsx.file){
 
 # read in .xlsx file of data - see inst/extdata/paper.txt for example formatting with names removed
 df <- XLConnect::readWorksheetFromFile(xlsx.file,sheet=1,startRow = 2,endCol = 15)
@@ -63,7 +62,7 @@ for ( i in 1:length(df$ID)){
 df$Reinfection[is.na(df$Reinfection)] <- FALSE
 
 ## remove unnecessary data if not required
-res <- df[-which(is.na(df$Reinfection)),-c(13,14)]
+res <- df[,-c(13,14)]
 
 return(res)
 
