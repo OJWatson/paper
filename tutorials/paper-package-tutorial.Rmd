@@ -104,9 +104,9 @@ outbreak process. (This will take a minute or two).
 ```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
 # Change the file parameter to wherever you want the html to be stored
-#  paper::animate_infection_network(first_infection_list=first_infection_list,
-#                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
-#                            detach=FALSE)
+  paper::animate_infection_network(first_infection_list=first_infection_list,
+                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
+                            detach=FALSE)
                             
 ```
 
@@ -150,7 +150,7 @@ the interquartile range of these simulations:
 
 paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
                          outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 200)
+                         include.observed = T,replicates = 2000)
 
 ```
 
@@ -174,7 +174,7 @@ generation and recovery times from the observed outbreak:
 
 paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
                          outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 200,
+                         include.observed = T,replicates = 2000,
                          sampling = TRUE)
 
 ```
