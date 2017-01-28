@@ -21,7 +21,7 @@ been collected and stored in a similar fashion to that presented within the xlsx
 included within the external data directory, and that the main data from the first 
 sheet in the excel document, between cell A2:Oxxx, is to be used.
 
-  Given the above specificiations, the tutorial below will give an overview of how
+  Given the above specifications, the tutorial below will give an overview of how
 to read in the data and produce a number of plots to help visualise the outbreak and
 present the key epidemiological parameters.
 
@@ -54,7 +54,7 @@ data("paper.outbreak.2016",package="paper")
 ## Confirm the datasets are the same
 identical(paper.outbreak.2016,outbreak.dataset)
 
-# If you are using the sample dataset for the remainder of the turorial then 
+# If you are using the sample dataset for the remainder of the tutorial then 
 # uncomment the following line of code:
 
 # outbreak.dataset <- paper.outbreak.2016
@@ -65,7 +65,7 @@ identical(paper.outbreak.2016,outbreak.dataset)
 For the next task we will need to subset the collected data so that we are only
 looking at those cases that were not reinfections. Using this subset of the data
 we will then be able to plot a number of static images from the network that will
-enable us to seee how the outbreak progressed in time.
+enable us to sere how the outbreak progressed in time.
 
 ```{r Create an infection network, include=TRUE, fig.align = "center"}
 
@@ -127,13 +127,59 @@ paper::epidemic_timeseries_plot(first_infection_list = first_infection_list)
 
 ## Parameter investigation
 
-Lastly we can examine the distribution of the epidemiological parameters.
+We can also examine the distribution of the epidemiological parameters.
 
 ```{r Epidemiological parameter investigation, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
 paper::paramater_boxplots_plot(outbreak.dataset=outbreak.dataset)
 
 ```
+
+## Simulated outbreaks
+
+It can often be very useful to see how this outbreak may compare to a simulated outbreak.
+To do this we can use the following function to simulate 2000 outbreaks and plot
+the interquartile range of these simulations: 
+
+```{r Simulated outbreaks, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
+                         outbreak.dataset = outbreak.dataset,
+                         include.observed = T,replicates = 2000)
+
+```
+
+To give some more information into how the simulated outbreaks are modeled. 
+For these simulations we assume each simulation is seeded with three infections 
+at the same time as the observed outbreak, and has a total population size equal to the 
+outbreak dataset. The number of secondary infections is then drawn from a Poisson 
+distribution with a mean of 1.8, as was used in the practical. The time of each 
+infection and recovery is also drawn from a Poisson with a mean equal to the observed 
+mean generation and recovery time respectively. Simulations are then stopped after 
+a period of time equal to the length of the observed outbreak.
+
+Given this simulation methodology we can start to hypothesise about why the simulated
+outbreaks are delayed when compared to the observed. If we look back at the box plots
+of the generation and recover times we can see that the data clearly does not 
+follow a Poisson distribution, but is multimodal with a period of approximately 
+2 hours. As a result we might choose to conduct the simulations again but sampling
+generation and recovery times from the observed outbreak:
+
+```{r Simulated outbreaks with sampling, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
+                         outbreak.dataset = outbreak.dataset,
+                         include.observed = T,replicates = 2000,
+                         sampling = TRUE)
+
+```
+
+This simulation is much better, with the timing of the infection peak much closer
+to the observed data. This sampling method however still fails to perfectly capture the
+temporal dynamics exhibited. There are many reasons why this is, but perhaps most
+interesting is the clear lull in infections that happens on Wednesdays in the observed
+data (when the students have half days for sports matches), which is not captured
+by the simulation.
 
 ## Summary and further thoughts
 
