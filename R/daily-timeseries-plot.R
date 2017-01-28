@@ -25,7 +25,7 @@ daily_timeseries_plot <- function(first_infection_list){
   network::add.vertices(paper.net, nv = length(uninfected))
 
   # And set their ID attributes
-  set.vertex.attribute(paper.net,"ID",value = uninfected,v = uninfected)
+  network::set.vertex.attribute(paper.net,"ID",value = uninfected,v = uninfected)
 
   # add vertex color attributes related to onset of infection and recovery
   networkDynamic::activate.vertex.attribute(paper.net,"color","blue",onset=-Inf,terminus=Inf)
