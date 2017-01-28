@@ -4,10 +4,12 @@
 \alias{epidemic_timeseries_plot}
 \title{Plot epidemic time series}
 \usage{
-epidemic_timeseries_plot(first_infection_list, title = NULL)
+epidemic_timeseries_plot(first_infection_list, N, title = NULL)
 }
 \arguments{
 \item{first_infection_list}{Infection list outputted by \code{first_infection_list}}
+
+\item{N}{Total population size.}
 
 \item{title}{Plot title. If NULL then no title will be added. Defult = NULL}
 }
