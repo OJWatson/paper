@@ -37,7 +37,7 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
   network::add.vertices(paper.net, nv = length(uninfected))
 
   # And set their ID attributes
-  set.vertex.attribute(paper.net,"ID",value = uninfected,v = uninfected)
+  set.vertex.attribute(paper.net,"vertex.names",value = uninfected,v = uninfected)
 
   # add vertex color attributes related to onset of infection and recovery
   networkDynamic::activate.vertex.attribute(paper.net,"color","blue",onset=-Inf,terminus=Inf)
