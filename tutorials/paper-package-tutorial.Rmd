@@ -104,15 +104,20 @@ outbreak process. (This will take a minute or two).
 ```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
 # Change the file parameter to wherever you want the html to be stored
-  paper::animate_infection_network(first_infection_list=first_infection_list,
-                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
-                            detach=FALSE)
+#  paper::animate_infection_network(first_infection_list=first_infection_list,
+#                            file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
+#                            detach=FALSE)
                             
 ```
 
 When you run the above function the animated network will automatically load in
-a web browser and save the html page to file path specified. To view the output 
-of the above function please then click [here](https://cdn.rawgit.com/OJWatson/paper/master/tutorials/Animated-Network-Dynamic.html)
+a web browser and save the html page to file path specified. This html is embedded
+below, and the animated network can be viewed by clicking play, and the duration
+of the animation changed with the menu in the top left. To view the html page
+output in a new tab please click [here](https://cdn.rawgit.com/OJWatson/paper/master/tutorials/Animated-Network-Dynamic.html)
+
+
+<iframe width="800" height="630" frameBorder="0" src="https://cdn.rawgit.com/OJWatson/paper/master/tutorials/Animated-Network-Dynamic.html" allowfullscreen></iframe>
 
 ## Epidemic Time Series
 
@@ -145,7 +150,7 @@ the interquartile range of these simulations:
 
 paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
                          outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 2000)
+                         include.observed = T,replicates = 200)
 
 ```
 
@@ -169,7 +174,7 @@ generation and recovery times from the observed outbreak:
 
 paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
                          outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 2000,
+                         include.observed = T,replicates = 200,
                          sampling = TRUE)
 
 ```
