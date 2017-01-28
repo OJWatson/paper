@@ -12,6 +12,9 @@
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param outbreak.dataset Outbreak dataset outputted by \code{outbreak_dataset_read}
 #' @param replicates Numerical describing number of bootstrap replicates. Default = 2000
+#' @param sampling Boolean determining if recovery and generation times should be sampled
+#' from the observed or drawn fro a poisson with mean equal to mean of the observed.
+#' Default = FALSE (poisson draws used)
 #' @param lower.quantile Numeric between 0 and 0.5 describing the lower quantile for
 #' each trace. Default = 0.25
 #' @param upper.quantile Numeric between 0.5 and 1 describing the lower quantile for
@@ -31,7 +34,8 @@
 
 bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
                                      first_infection_list, outbreak.dataset,
-                                     replicates = 2000, lower.quantile=0.25,
+                                     replicates = 2000, sampling = FALSE,
+                                     lower.quantile=0.25,
                                      upper.quantile=0.75, title=NULL,
                                      alpha = 0.2, size = 1, include.line = TRUE,
                                      include.observed = FALSE){
@@ -81,7 +85,8 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
                                                I = I,
                                                seed.hour = seed.hour,
                                                first_infection_list = first_infection_list,
-                                               outbreak.dataset = outbreak.dataset)
+                                               outbreak.dataset = outbreak.dataset,
+                                               sampling = sampling)
   }
 
   # Message beginning of replicates

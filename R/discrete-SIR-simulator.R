@@ -16,13 +16,17 @@
 #' @param seed.hour Hour at which seeding of epidemic begins. Default = 9
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param outbreak.dataset Outbreak dataset outputted by \code{outbreak_dataset_read}
+#' @param sampling Boolean determining if recovery and generation times should be sampled
+#' from the observed or drawn fro a poisson with mean equal to mean of the observed.
+#' Default = FALSE (poisson draws used)
 #'
 #' @export
 #'
 #'
 
 discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
-                                   first_infection_list, outbreak.dataset){
+                                   first_infection_list, outbreak.dataset,
+                                   sampling = FALSE){
 
   # Initial conditions
   # If no N is provided, then the total population is the same as the provided datasets
@@ -70,13 +74,22 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
 
   ## Initialisation
   new.infections <- sum(rpois(n = I,lambda = R0))
+
+  if(sampling == TRUE){
+    infection.times <- sample(x = mean.generation.time,size=new.infections,replace = T) + start
+    recovery.times <- sample(x = mean.recovery.time,size=I,replace = T) + start
+  } else {
   infection.times <- rpois(new.infections,lambda = mean.generation.time) + start
   recovery.times <- rpois(I,lambda = mean.recovery.time) + start
+  }
 
   next.event <- min(c(infection.times,recovery.times))
   if(next.event!=start){
     start <- start + 1
   }
+
+  # create boolean to end simulation early if it is finished
+  stop_simulation = FALSE
 
   ## Main loop
   for (current.hour in start:end ){
@@ -111,12 +124,21 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
         Iv[vp] <- Iv[vp] + now.infections
 
         # Work out what time those infected in this hour will recover
-        recovery.times <- c(recovery.times , rpois(n = now.infections,lambda=mean.recovery.time) + current.hour)
+        if(sampling == TRUE){
+          recovery.times <- c(recovery.times , sample(x = mean.recovery.time,size=now.infections,replace = T) + current.hour)
+        } else {
+          recovery.times <- c(recovery.times , rpois(n = now.infections,lambda=mean.recovery.time) + current.hour)
+        }
+
 
         # First work out how many new infections would arise from the infections that
         # occured in this hour, and what their times would be
         new.infections <- sum(rpois(n = now.infections,lambda = R0))
-        infection.times <- c(infection.times , rpois(n = new.infections,lambda=mean.generation.time) + current.hour)
+        if(sampling == TRUE){
+          infection.times <- c(infection.times , sample(x = mean.generation.time,size=new.infections,replace = T) + current.hour)
+        } else {
+          infection.times <- c(infection.times , rpois(n = new.infections,lambda=mean.generation.time) + current.hour)
+        }
 
         # If there are more infection times than people to infect, then sort the infection times and
         # take the earliest x, where x is the number of susceptibles left
@@ -143,7 +165,19 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
       }
 
       ## update next event or break out of sim loop if no more events
-      if(length(c(infection.times,recovery.times))==0) break
+      if(length(c(infection.times,recovery.times))==0){
+
+        ## if we are on the last time step then we don't do this
+        if(vp != end + 1){
+          Sv[(vp+1) : (end+1)] <- Sv[vp]
+          Iv[(vp+1) : (end+1)] <- Iv[vp]
+          Rv[(vp+1) : (end+1)] <- Rv[vp]
+        }
+        stop_simulation = TRUE
+      }
+      if(stop_simulation) break
+
+      ## find out next event time
       next.event <- min(c(infection.times,recovery.times))
 
 
@@ -153,6 +187,11 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   }
 
   # return results
+  test = TRUE
+  if(test){
+    a = 1
+  }
+
   return(data.frame(Sv,Iv,Rv,times))
 
 }

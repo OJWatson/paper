@@ -6,8 +6,9 @@
 \usage{
 bootstrap_simulated_plot(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
   first_infection_list, outbreak.dataset, replicates = 2000,
-  lower.quantile = 0.25, upper.quantile = 0.75, title = NULL,
-  alpha = 0.2, size = 1, include.line = TRUE, include.observed = FALSE)
+  sampling = FALSE, lower.quantile = 0.25, upper.quantile = 0.75,
+  title = NULL, alpha = 0.2, size = 1, include.line = TRUE,
+  include.observed = FALSE)
 }
 \arguments{
 \item{R0}{Reproductive number. Default = 1.8}
@@ -23,6 +24,10 @@ bootstrap_simulated_plot(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
 \item{outbreak.dataset}{Outbreak dataset outputted by \code{outbreak_dataset_read}}
 
 \item{replicates}{Numerical describing number of bootstrap replicates. Default = 2000}
+
+\item{sampling}{Boolean determining if recovery and generation times should be sampled
+from the observed or drawn fro a poisson with mean equal to mean of the observed.
+Default = FALSE (poisson draws used)}
 
 \item{lower.quantile}{Numeric between 0 and 0.5 describing the lower quantile for
 each trace. Default = 0.25}
