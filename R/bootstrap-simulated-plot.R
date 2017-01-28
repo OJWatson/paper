@@ -67,6 +67,13 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
     return(data_sum)
   }
 
+  ## Function to generate ggplot colours
+  gg_color_hue <- function(n) {
+    hues = seq(15, 375, length = n + 1)
+    hcl(h = hues, l = 65, c = 100)[1:n]
+  }
+
+
   ## START MAIN ##
   #######################################################
 
