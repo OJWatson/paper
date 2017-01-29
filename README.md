@@ -31,7 +31,7 @@ library(devtools)
 Once installed, the package can be installed and loaded using:
 
 ```r
-install_github("OJWatson/paper")
+devtools::install_github("OJWatson/paper")
 library(paper)
 ```
 
@@ -44,13 +44,16 @@ library(paper)
 ```r
 "Error in unzip(src, list = TRUE) : 'exdir' does not exist".
 ```
-This error is thrown when the default temporary directory where the package unzips to is not writeable. To fix this, first close all instances of R / RStudio and open Command Prompt and enter the following:
+This error is related to RStudio failing to handle the network location for installation. A quick fix is to close RStudio and open the directory where you have R installed on your network ("\\icnas1.cc.ic.ac.uk/ic001/R/R-3.3.2/bin"). In that directory run R and then install the package by using:
 ```r
-R
-Sys.setenv(c("TMP","TEMP","TMPDIR") = "C:/Users/User/Desktop")
+devtools::install_github("OJWatson/paper")
 ```
-Now, open a new RStudio window and you should be able to install the package. 
-
+Now, open a new RStudio window and you should be able to load the package, presuming your RStudio session is using your network R library. To troubleshoot this:
+``` r 
+.libPaths()
+## If the above does not return something that looks like "\\\\icnas1.cc.ic.ac.uk/ic001/R/R-3.3.2/library" then add the library path:
+.libPaths("\\\\icnas1.cc.ic.ac.uk/ic001/R/R-3.3.2/library")
+```
 ***
 
 #### Asking a question
