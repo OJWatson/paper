@@ -48,8 +48,14 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   Recovery_Times <- first_infection_list$linelist$End_Infection_Hours.since.start -
     first_infection_list$linelist$Infection_Hours.since.start
 
+  # Remove the NAs
+  Recovery_Times <- Recovery_Times[!is.na(Recovery_Times)]
+
   # Create vector of generation times from the outbreak dataset
   Generation_Times <- outbreak.dataset$Generation_Time_Hours
+
+  # Remove the NAs
+  Generation_Times <- Generation_Times[!is.na(Generation_Times)]
 
   # Create vector of generation times from the outbreak dataset
   Incubation_Times <- outbreak.dataset$Incubation_Period_Hours
@@ -76,11 +82,11 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   new.infections <- sum(rpois(n = I,lambda = R0))
 
   if(sampling == TRUE){
-    infection.times <- sample(x = mean.generation.time,size=new.infections,replace = T) + start
-    recovery.times <- sample(x = mean.recovery.time,size=I,replace = T) + start
+    infection.times <- round(sample(x = Generation_Times,size=new.infections,replace = T) + start)
+    recovery.times <- round(sample(x = Recovery_Times,size=I,replace = T) + start)
   } else {
-  infection.times <- rpois(new.infections,lambda = mean.generation.time) + start
-  recovery.times <- rpois(I,lambda = mean.recovery.time) + start
+    infection.times <- rpois(new.infections,lambda = mean.generation.time) + start
+    recovery.times <- rpois(I,lambda = mean.recovery.time) + start
   }
 
   next.event <- min(c(infection.times,recovery.times))
@@ -125,7 +131,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
 
         # Work out what time those infected in this hour will recover
         if(sampling == TRUE){
-          recovery.times <- c(recovery.times , sample(x = mean.recovery.time,size=now.infections,replace = T) + current.hour)
+          recovery.times <- c(recovery.times , round(sample(x = Recovery_Times,size=now.infections,replace = T) + current.hour))
         } else {
           recovery.times <- c(recovery.times , rpois(n = now.infections,lambda=mean.recovery.time) + current.hour)
         }
@@ -135,7 +141,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
         # occured in this hour, and what their times would be
         new.infections <- sum(rpois(n = now.infections,lambda = R0))
         if(sampling == TRUE){
-          infection.times <- c(infection.times , sample(x = mean.generation.time,size=new.infections,replace = T) + current.hour)
+          infection.times <- c(infection.times , round(sample(x = Generation_Times,size=new.infections,replace = T) + current.hour))
         } else {
           infection.times <- c(infection.times , rpois(n = new.infections,lambda=mean.generation.time) + current.hour)
         }
@@ -174,6 +180,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
           Rv[(vp+1) : (end+1)] <- Rv[vp]
         }
         stop_simulation = TRUE
+
       }
       if(stop_simulation) break
 

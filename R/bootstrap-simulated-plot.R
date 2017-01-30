@@ -52,7 +52,7 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
   ## EXTRA FUNCTIONS ##
   #######################################################
   ## Extra function required to calculate discrete time mean and quantile estimations
-  data_summary <- function(data, varname, grps){
+  data_summary <- function(data, varname, grps, lower.quantile, upper.quantile){
 
     ## summary function describing the quantile calculation
     summary_func <- function(x, col){
@@ -103,9 +103,9 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
   bootstrap.melt <- reshape2::melt(data,id="times")
 
   ## Calculate summary data for each infection state
-  melt_summary_sv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Sv",], varname="value", grps= "times")
-  melt_summary_iv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Iv",], varname="value", grps= "times")
-  melt_summary_rv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Rv",], varname="value", grps= "times")
+  melt_summary_sv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Sv",], varname="value", grps= "times", lower.quantile, upper.quantile)
+  melt_summary_iv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Iv",], varname="value", grps= "times", lower.quantile, upper.quantile)
+  melt_summary_rv <- data_summary(bootstrap.melt[bootstrap.melt$variable=="Rv",], varname="value", grps= "times", lower.quantile, upper.quantile)
 
   # Load required fonts
   extrafont::loadfonts(device = "win",quiet=T)
@@ -118,7 +118,7 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
 
   if(include.line){
     res <- res + ggplot2::geom_line(data = melt_summary_sv, ggplot2::aes(x=times,y=value,color="S"),size=size) +
-      ggplot2::geom_line(ggplot2::aes(x=times,y=value,color="R"),size=size) +
+      ggplot2::geom_line(data = melt_summary_rv,ggplot2::aes(x=times,y=value,color="R"),size=size) +
       ggplot2::geom_line(data = melt_summary_iv, ggplot2::aes(x=times,y=value,color="I"),size=size)
   }
 
