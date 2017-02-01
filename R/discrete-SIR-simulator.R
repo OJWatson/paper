@@ -19,6 +19,9 @@
 #' @param sampling Boolean determining if recovery and generation times should be sampled
 #' from the observed or drawn fro a poisson with mean equal to mean of the observed.
 #' Default = FALSE (poisson draws used)
+#' @param exponential Boolean determining if infection is exponential or not. If
+#' FALSE (Default) then the number of secondary infections from an individual is
+#' takes into account S/N
 #'
 #' @export
 #'
@@ -26,12 +29,12 @@
 
 discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
                                    first_infection_list, outbreak.dataset,
-                                   sampling = FALSE){
+                                   sampling = FALSE, exponential = FALSE){
 
   # Initial conditions
   # If no N is provided, then the total population is the same as the provided datasets
   if(is.null(N)){
-  N = max(outbreak.dataset$ID)
+    N = max(outbreak.dataset$ID)
   }
   S <- N - I
   R <- 0
@@ -45,8 +48,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   Rv <- rep(R,length(times))
 
   # Create vector of recovery times from the infection list
-  Recovery_Times <- first_infection_list$linelist$End_Infection_Hours.since.start -
-    first_infection_list$linelist$Infection_Hours.since.start
+  Recovery_Times <- outbreak.dataset$End_Infection_Hours.since.start - outbreak.dataset$Infection_Hours.since.start
 
   # Remove the NAs
   Recovery_Times <- Recovery_Times[!is.na(Recovery_Times)]
@@ -79,7 +81,14 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   end <- max(times)
 
   ## Initialisation
-  new.infections <- sum(rpois(n = I,lambda = R0))
+  if(exponential==FALSE){
+    possible.new.infections <- sum(rpois(n=I,lambda=R0))
+    prob_of_succesful_contact <- (S : (S-possible.new.infections+1))/N
+    prob_of_succesful_contact[prob_of_succesful_contact<0] <- 0
+    new.infections <-  sum(sapply(X = prob_of_succesful_contact,function(x){return(rbinom(n = 1,size = 1,prob = x))}))
+  } else {
+    new.infections <- sum(rpois(n = I,lambda = R0))
+  }
 
   if(sampling == TRUE){
     infection.times <- round(sample(x = Generation_Times,size=new.infections,replace = T) + start)
@@ -139,7 +148,16 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
 
         # First work out how many new infections would arise from the infections that
         # occured in this hour, and what their times would be
-        new.infections <- sum(rpois(n = now.infections,lambda = R0))
+        if(exponential==FALSE){
+          possible.new.infections <- sum(rpois(n=now.infections,lambda=R0))
+          prob_of_succesful_contact <- (Sv[vp] : (Sv[vp]-possible.new.infections+1))/N
+          prob_of_succesful_contact[prob_of_succesful_contact<0] <- 0
+          new.infections <-  sum(sapply(X = prob_of_succesful_contact,function(x){return(rbinom(n = 1,size = 1,prob = x))}))
+        } else {
+          new.infections <- sum(rpois(n = now.infections,lambda = R0))
+        }
+
+
         if(sampling == TRUE){
           infection.times <- c(infection.times , round(sample(x = Generation_Times,size=new.infections,replace = T) + current.hour))
         } else {

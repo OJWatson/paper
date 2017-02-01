@@ -26,6 +26,9 @@
 #' quantiles. Default = TRUE
 #' @param include.observed Boolean describing whether to include the observed epidemic
 #' alongisde the simulated epidemic. If this is true, N will be calculated from outbreak.dataset
+#' @param exponential Boolean determining if infection is exponential or not within
+#' the simulation. If FALSE (Default) then the number of secondary infections from an individual is
+#' takes into account S/N
 #'
 #' @export
 #'
@@ -38,7 +41,7 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
                                      lower.quantile=0.25,
                                      upper.quantile=0.75, title=NULL,
                                      alpha = 0.2, size = 1, include.line = TRUE,
-                                     include.observed = FALSE){
+                                     include.observed = FALSE, exponential = FALSE){
 
 
   ## Parameter handling and checking
@@ -93,7 +96,8 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
                                                seed.hour = seed.hour,
                                                first_infection_list = first_infection_list,
                                                outbreak.dataset = outbreak.dataset,
-                                               sampling = sampling)
+                                               sampling = sampling,
+                                               exponential = exponential)
   }
 
   # Message beginning of replicates
@@ -117,9 +121,9 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
     ggplot2::geom_ribbon(data = melt_summary_iv, ggplot2::aes(x=times,ymin=min, ymax=max),col=gg_color_hue(3)[1],alpha=alpha,fill=gg_color_hue(3)[1])
 
   if(include.line){
-    res <- res + ggplot2::geom_line(data = melt_summary_sv, ggplot2::aes(x=times,y=value,color="S"),size=size) +
-      ggplot2::geom_line(data = melt_summary_rv,ggplot2::aes(x=times,y=value,color="R"),size=size) +
-      ggplot2::geom_line(data = melt_summary_iv, ggplot2::aes(x=times,y=value,color="I"),size=size)
+    res <- res + ggplot2::geom_line(data = melt_summary_sv, ggplot2::aes(x=times,y=value,color="S"),linetype = "dashed",size=size) +
+      ggplot2::geom_line(data = melt_summary_rv,ggplot2::aes(x=times,y=value,color="R"),linetype = "dashed",size=size) +
+      ggplot2::geom_line(data = melt_summary_iv, ggplot2::aes(x=times,y=value,color="I"),linetype = "dashed",size=size)
   }
 
   res <- res +  ggplot2::scale_x_continuous(breaks=seq(0,24*5,24),limits = c(0,120),expand = c(0.01,0)) +
@@ -153,9 +157,9 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
 
     ## Add the mean line from simulated if required
     if(include.line){
-      res <- res + ggplot2::geom_line(data = melt_summary_sv, ggplot2::aes(x=times,y=value,color="S"),size=size) +
-        ggplot2::geom_line(data = melt_summary_rv, ggplot2::aes(x=times,y=value,color="R"),size=size) +
-        ggplot2::geom_line(data = melt_summary_iv, ggplot2::aes(x=times,y=value,color="I"),size=size)
+      res <- res + ggplot2::geom_line(data = melt_summary_sv, ggplot2::aes(x=times,y=value,color="S"),linetype = "dashed",size=size) +
+        ggplot2::geom_line(data = melt_summary_rv, ggplot2::aes(x=times,y=value,color="R"),linetype = "dashed",size=size) +
+        ggplot2::geom_line(data = melt_summary_iv, ggplot2::aes(x=times,y=value,color="I"),linetype = "dashed",size=size)
     }
 
 
