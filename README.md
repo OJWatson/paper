@@ -45,7 +45,7 @@ library(paper)
 ```r
 "Error in unzip(src, list = TRUE) : 'exdir' does not exist".
 ```
-This error is related to RStudio failing to handle the network location for installation. A quick fix is to close RStudio and open the directory where you have R installed on your network ("\\icnas1.cc.ic.ac.uk/ic001/R/R-3.3.2/bin"). In that directory run R and then install the package by using:
+This error is related to RStudio failing to handle the network location for installation. A quick fix is to close RStudio and open the directory where you have R installed on your network ("\\icnas1.cc.ic.ac.uk/ic001/R/R-3.3.2/bin" - where ic001 is your username). In that directory run R and then install the package by using:
 ```r
 devtools::install_github("OJWatson/paper")
 ```
