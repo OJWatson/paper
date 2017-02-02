@@ -5,7 +5,8 @@
 \title{Discrete in time SIR simulator}
 \usage{
 discrete_SIR_simulator(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
-  first_infection_list, outbreak.dataset, sampling = FALSE)
+  first_infection_list, outbreak.dataset, sampling = FALSE,
+  exponential = FALSE)
 }
 \arguments{
 \item{R0}{Reproductive number. Default = 1.8}
@@ -24,6 +25,10 @@ is the same as the provided datasets.}
 \item{sampling}{Boolean determining if recovery and generation times should be sampled
 from the observed or drawn fro a poisson with mean equal to mean of the observed.
 Default = FALSE (poisson draws used)}
+
+\item{exponential}{Boolean determining if infection is exponential or not. If
+FALSE (Default) then the number of secondary infections from an individual is
+takes into account S/N}
 }
 \description{
 \code{discrete_SIR_simulator} takes output of \code{first_infection_list} and

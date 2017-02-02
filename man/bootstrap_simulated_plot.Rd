@@ -8,7 +8,7 @@ bootstrap_simulated_plot(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
   first_infection_list, outbreak.dataset, replicates = 2000,
   sampling = FALSE, lower.quantile = 0.25, upper.quantile = 0.75,
   title = NULL, alpha = 0.2, size = 1, include.line = TRUE,
-  include.observed = FALSE)
+  include.observed = FALSE, exponential = FALSE)
 }
 \arguments{
 \item{R0}{Reproductive number. Default = 1.8}
@@ -46,6 +46,10 @@ quantiles. Default = TRUE}
 
 \item{include.observed}{Boolean describing whether to include the observed epidemic
 alongisde the simulated epidemic. If this is true, N will be calculated from outbreak.dataset}
+
+\item{exponential}{Boolean determining if infection is exponential or not within
+the simulation. If FALSE (Default) then the number of secondary infections from an individual is
+takes into account S/N}
 }
 \description{
 \code{bootstrap_simulated_plot} takes output of \code{first_infection_list} and
