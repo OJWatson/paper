@@ -22,7 +22,8 @@ Imports:
     extrafont,
     statnet.common,
     base64,
-    plyr
+    plyr,
+    XLConnectJars
 License: GPL 2.0
 LazyData: TRUE
 RoxygenNote: 5.0.1
