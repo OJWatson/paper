@@ -29,7 +29,7 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
     ## time that is 5 larger than the max infection, so that they appear on the graph cleanly:
 
     first_infection_list$linelist$Infection_Hours.since.start[is.na(first_infection_list$linelist$Infection_Hours.since.start)] <-
-      max(first_infection_list$linelist$Infection_Hours.since.start,na.rm=TRUE) + 5
+      max(first_infection_list$linelist$Infection_Hours.since.start,na.rm=TRUE) + 10
 
     if(log){
       # time orientated layout
@@ -52,6 +52,8 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
 
     # tree orientated layout
     tree <- igraph::layout_as_tree(outbreak.graph,root = 1:3,rootlevel = rep(1,3))
+    tree[is.na(tree[,1]),1] <- min(tree[,1],na.rm=T)
+    tree[(max(first_infection_list$contacts[,1:2])+1):dim(tree)[1],1] <- 0
 
     if(sum(is.na(first_infection_list$linelist$Parent.ID))>0){
       title = "Note: All uninfected individuals \nare represented by one node"
