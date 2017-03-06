@@ -92,11 +92,11 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
   }
 
   if(sampling == TRUE){
-    infection.times <- round(sample(x = Generation_Times,size=new.infections,replace = T) + start)
-    recovery.times <- round(sample(x = Recovery_Times,size=I,replace = T) + start)
+    infection.times <- round(sample(x = Generation_Times,size=new.infections,replace = T) + ceiling(start))
+    recovery.times <- round(sample(x = Recovery_Times,size=I,replace = T) + ceiling(start))
   } else {
-    infection.times <- rpois(new.infections,lambda = mean.generation.time) + start
-    recovery.times <- rpois(I,lambda = mean.recovery.time) + start
+    infection.times <- rpois(new.infections,lambda = mean.generation.time) + ceiling(start)
+    recovery.times <- rpois(I,lambda = mean.recovery.time) + ceiling(start)
   }
 
   next.event <- min(c(infection.times,recovery.times))

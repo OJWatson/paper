@@ -6,9 +6,7 @@
 #' object for plotting.
 #'
 #' @param R0 Reproductive number. Default = 1.8
-#' @param N Total population size. Defult = 80
 #' @param I Number of initial seed infections. Default = 3
-#' @param seed.hour Hour at which seeding of epidemic begins. Default = 9
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}
 #' @param outbreak.dataset Outbreak dataset outputted by \code{outbreak_dataset_read}
 #' @param replicates Numerical describing number of bootstrap replicates. Default = 2000
@@ -35,7 +33,7 @@
 #'
 
 
-bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
+bootstrap_simulated_plot <- function(R0 = 1.8, I = 3,
                                      first_infection_list, outbreak.dataset,
                                      replicates = 2000, sampling = FALSE,
                                      lower.quantile=0.25,
@@ -91,9 +89,7 @@ bootstrap_simulated_plot <- function(R0 = 1.8, N = 80, I = 3, seed.hour = 9,
   {
 
     data[[i]] <- paper::discrete_SIR_simulator(R0 = R0,
-                                               N = N,
                                                I = I,
-                                               seed.hour = seed.hour,
                                                first_infection_list = first_infection_list,
                                                outbreak.dataset = outbreak.dataset,
                                                sampling = sampling,
