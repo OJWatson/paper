@@ -27,20 +27,21 @@
 #'
 #'
 
-discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
+discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
                                    first_infection_list, outbreak.dataset,
                                    sampling = FALSE, exponential = FALSE){
 
   # Initial conditions
   # If no N is provided, then the total population is the same as the provided datasets
   if(is.null(N)){
-    N = max(outbreak.dataset$ID)
+    N <- max(outbreak.dataset$ID)
+    seed.hour <- min(first_infection_list$linelist$Infection_Hours.since.start,na.rm=T)
   }
   S <- N - I
   R <- 0
 
   # Create vector of all discrete times from 0 to end of infection list
-  times <- c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start,na.rm = TRUE))
+  times <- sort(c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start,na.rm = TRUE),seed.hour))
 
   # Create result vectors
   Sv <- rep(S,length(times))
@@ -107,7 +108,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   stop_simulation = FALSE
 
   ## Main loop
-  for (current.hour in start:end ){
+  for (current.hour in ceiling(start):end ){
 
     ## for reproducibility this is done in case non discrete time steps are to be used
     vp <- match(current.hour,times)
@@ -192,7 +193,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
       if(length(c(infection.times,recovery.times))==0){
 
         ## if we are on the last time step then we don't do this
-        if(vp != end + 1){
+        if(vp != length(times)){
           Sv[(vp+1) : (end+1)] <- Sv[vp]
           Iv[(vp+1) : (end+1)] <- Iv[vp]
           Rv[(vp+1) : (end+1)] <- Rv[vp]
@@ -215,6 +216,9 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
   test = TRUE
   if(test){
     a = 1
+    if(length(Sv)>length(times)){
+      a=2
+    }
   }
 
   return(data.frame(Sv,Iv,Rv,times))

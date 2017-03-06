@@ -4,7 +4,7 @@
 \alias{discrete_SIR_simulator}
 \title{Discrete in time SIR simulator}
 \usage{
-discrete_SIR_simulator(R0 = 1.8, N = NULL, I = 3, seed.hour = 9,
+discrete_SIR_simulator(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
   first_infection_list, outbreak.dataset, sampling = FALSE,
   exponential = FALSE)
 }
