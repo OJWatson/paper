@@ -39,7 +39,7 @@ set the outbreak.dataset variable equal to paper.outbreak.2016.
 # First make sure the package is installed
 devtools::install_github("OJWatson/paper")
 
-# Load package
+# Load package - Warning messages will be thrown however these are not a problem
 library(paper)
 
 # With the package installed first read in the data.
@@ -69,7 +69,7 @@ looking at those cases that were not reinfections. Using this subset of the data
 we will then be able to plot a number of static images from the network that will
 enable us to sere how the outbreak progressed in time.
 
-```{r Create an infection network, include=TRUE, fig.align = "center"}
+```{r Create an infection network, include=TRUE, fig.align = "center", cache = T}
 
 # Convert the read outbreak dataset into only the non-reinfections
 first_infection_list <- paper::first_infection_list(outbreak.dataset)

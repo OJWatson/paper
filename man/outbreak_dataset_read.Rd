@@ -4,10 +4,13 @@
 \alias{outbreak_dataset_read}
 \title{Read in and remove sensitive data}
 \usage{
-outbreak_dataset_read(xlsx.file)
+outbreak_dataset_read(xlsx.file, fill.in.end.infection.dates = FALSE)
 }
 \arguments{
 \item{xlsx.file}{Full file path to where xlsx Outbreak dataset is stored.}
+
+\item{fill.in.end.infection.hours}{Boolean detailing whether to fill in empty end infection hours. Will be needed
+if \code{outbreak_dataset_read} throws an error associated with missing data.}
 }
 \description{
 \code{outbreak_dataset_read} reads data from outbreak practical file and fills in ID blanks.

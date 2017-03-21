@@ -61,7 +61,7 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
     correct.levels <- max(unlist(lapply(igraph::all_simple_paths(outbreak.graph,from = seeds),length)))
 
     tree <- cbind(c(0,0),c(0,0))
-    while(length(unique(tree[,2]))<correct.levels){
+    while(length(unique(tree[,2]))<=correct.levels){
       tree <- igraph::layout_as_tree(outbreak.graph,root = seeds,rootlevel = rep(1,3))
       tree[is.na(tree[,1]),1] <- min(tree[,1],na.rm=T)
       tree[(max(first_infection_list$contacts[,1:2])+1):dim(tree)[1],1] <- 0
