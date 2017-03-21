@@ -31,27 +31,12 @@ offspring_distribution_plot <- function(outbreak.dataset,title=NULL,include.unob
   #ppois(q = 0:max(offspring_distribution_df$R0),1.8,lower.tail = F)*length(offspring_distribution_df$R0)
 
   # Create ggplot object
-  res <- ggplot(offspring_distribution_df, aes(R0)) +
-    geom_histogram(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)),colour = "black", fill = "white") +
-    geom_freqpoly(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)), size = 1) +
+  res <- ggplot2::ggplot(offspring_distribution_df, aes(R0)) +
+    ggplot2::geom_histogram(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)),colour = "black", fill = "white") +
+    ggplot2::geom_freqpoly(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)), size = 1) +
     ggplot2::xlab("Offspring Distribution (R0)") +
     ggplot2::ylab("Frequency") +
-    scale_x_continuous(breaks=min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)) +
-    ggplot2::theme_classic() + ggplot2::theme_light() +
-    ggplot2::theme(legend.position="none",
-      axis.text.x = ggplot2::element_text(size = 12, family = "Times New Roman"),
-      axis.title.y = ggplot2::element_text(margin=ggplot2::margin(c(0,10)),size = 14, family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(size = 12, family = "Times New Roman"),
-      plot.title = ggplot2::element_text(size = 14, family = "Times New Roman",hjust = 0.5),
-      panel.border = ggplot2::element_blank(),
-      axis.line = ggplot2::element_line())
-
-  ggplot(offspring_distribution_df, aes(R0)) +
-    geom_histogram(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)),colour = "black", fill = "white") +
-    geom_freqpoly(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)), size = 1) +
-    ggplot2::xlab("Offspring Distribution (R0)") +
-    ggplot2::ylab("Frequency") +
-    scale_x_continuous(breaks=seq(0,7,1))
+    ggplot2::scale_x_continuous(breaks=min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)) +
     ggplot2::theme_classic() + ggplot2::theme_light() +
     ggplot2::theme(legend.position="none",
       axis.text.x = ggplot2::element_text(size = 12, family = "Times New Roman"),
