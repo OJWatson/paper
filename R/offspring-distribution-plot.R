@@ -5,6 +5,9 @@
 #'
 #' @param outbreak.dataset Outbreak dataset outputted by \code{outbreak_dataset_read}
 #' @param title Plot title. Default = NULL
+#' @param include.unobserved.as.zero Boolean detailing whether idividuals who have not
+#' yet ended their infection by the end of the practical are included and as R0 = 0 occurences.
+#' Default = FALSE.
 #'
 #' @export
 #'
