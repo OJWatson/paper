@@ -14,7 +14,7 @@
 outbreak_dataset_read <- function(xlsx.file){
 
   # read in .xlsx file of data - see inst/extdata/paper.txt for example formatting with names removed
-  df <- XLConnect::readWorksheetFromFile(xlsx.file2,sheet=1,startRow = 2,endCol = 20,colTypes=c(rep("character",15),rep("character",5)),useCachedValues=T)
+  df <- XLConnect::readWorksheetFromFile(xlsx.file,sheet=1,startRow = 2,endCol = 20,colTypes=c(rep("character",15),rep("character",5)),useCachedValues=T)
 
   # Handle for other type of excel sheet provided
   if(is.element("Hours.since.start.4",names(df))){
