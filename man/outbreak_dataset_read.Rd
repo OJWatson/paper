@@ -11,6 +11,7 @@ outbreak_dataset_read(xlsx.file)
 }
 \description{
 \code{outbreak_dataset_read} reads data from outbreak practical file and fills in ID blanks.
-See inst/extdata for examples of how the excel files should look like before importing.
+See inst/extdata for examples of how the excel files should look like before importing. Can be one
+of two types now.
 }
 

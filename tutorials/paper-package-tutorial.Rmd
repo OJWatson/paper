@@ -44,6 +44,8 @@ library(paper)
 
 # With the package installed first read in the data.
 # This function will throw warnings highlighting rows where there may be errors in the excel file
+# Remember to replace the argument for xlsx.file to the local file path where your saved worksheet is
+# If it is on your desktop it will look something like xlsx.file = "C:/Users/Bob/Desktop/savedworksheet.xlsx"
 outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdata","2016_OUTBREAK.xlsx",package="paper"))
 
 # Visualise the dataset
@@ -81,7 +83,13 @@ unique(first_infection_list$linelist$Reinfection)
 # Next we will create a plot of the outbreak that is time-orientated, i.e. the relative
 # node positions represents the point in time that an individual was infected:
 
-paper::infection_network_plot(first_infection_list = first_infection_list, time = TRUE)
+paper::infection_network_plot(first_infection_list = first_infection_list, time = TRUE, log = FALSE)
+
+# We might find that the outbreak is quite cramped in teh above as a lot of infections happen over 
+# a very short time frame with respect to the 5 day outbreak. We can thus log transform the times of
+# infection to spread out the outbreak for further clarity at the earlier stages
+
+paper::infection_network_plot(first_infection_list = first_infection_list, time = TRUE, log = TRUE)
 
 # We can also visualise the network in a more "tree" like fashion which shows each
 # infection event with an equal length branch for easier visualisation:
@@ -140,6 +148,26 @@ paper::paramater_boxplots_plot(outbreak.dataset=outbreak.dataset)
 
 ```
 
+We might also want to view the offspring distribution to see how it compares to the poisson distribution that was used 
+to generate the actual observed data. 
+
+```{r Offspring distribution, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset)
+
+```
+
+What we can see from above is the confirmed number of secondary cases from each individual. We have not observed
+any zero R0 values because from the nature of the practical it is hard to know exactly whether an individual infected 
+zero if they have not ended their infectious period. If we assume that everyone who was infected by yielded no
+secondary cases by th enf of the practical we can then observe potential values of R0 equal to 0.
+
+```{r Offspring distribution with zero, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
+
+paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset, include.unobserved.as.zero = T)
+
+```
+
 ## Simulated outbreaks
 
 It can often be very useful to see how this outbreak may compare to a simulated outbreak.
@@ -148,9 +176,13 @@ the interquartile range of these simulations:
 
 ```{r Simulated outbreaks, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
-paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
-                         outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 2000)
+paper::bootstrap_simulated_plot(
+  first_infection_list = first_infection_list,
+  outbreak.dataset = outbreak.dataset, 
+  lower.quantile=0.25,
+  upper.quantile=0.75,
+  include.observed = T,
+  replicates = 2000)
 
 ```
 
@@ -172,10 +204,14 @@ generation and recovery times from the observed outbreak:
 
 ```{r Simulated outbreaks with sampling, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
-paper::bootstrap_simulated_plot(first_infection_list = first_infection_list,
-                         outbreak.dataset = outbreak.dataset,
-                         include.observed = T,replicates = 2000,
-                         sampling = TRUE)
+paper::bootstrap_simulated_plot(
+  first_infection_list = first_infection_list,
+  outbreak.dataset = outbreak.dataset, 
+  lower.quantile = 0.25,
+  upper.quantile = 0.75,
+  include.observed = T,
+  replicates = 2000,
+  sampling = TRUE)
 
 ```
 
