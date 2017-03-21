@@ -31,7 +31,7 @@ offspring_distribution_plot <- function(outbreak.dataset,title=NULL,include.unob
   #ppois(q = 0:max(offspring_distribution_df$R0),1.8,lower.tail = F)*length(offspring_distribution_df$R0)
 
   # Create ggplot object
-  res <- ggplot2::ggplot(offspring_distribution_df, aes(R0)) +
+  res <- ggplot2::ggplot(offspring_distribution_df, ggplot2::aes(R0)) +
     ggplot2::geom_histogram(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)),colour = "black", fill = "white") +
     ggplot2::geom_freqpoly(bins = length(min(offspring_distribution_df$R0):max(offspring_distribution_df$R0)), size = 1) +
     ggplot2::xlab("Offspring Distribution (R0)") +
