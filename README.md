@@ -7,7 +7,7 @@
 Paper is a package designed to assist in demonstration of analysis associated to "paper outbreak" teaching practical. It is a collection of functions designed to ease analaysis of the paper outbreak practical within R. This includes importing and cleaning data from an excel sheet, viewing the infection network, visualising the outbreak as an animation, and calculating the epidemiological parameters associated with the practical.
 
 ***
-> To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/51f72b0773dc743d7c1c29d311b5faa762891cb7/tutorials/Animated-Network-Dynamic.html).
+> To view the tutorial please click [here](https://cdn.rawgit.com/OJWatson/paper/d7d3c6e8de5f12a155e1560136d6b0b08d5bc9f4/tutorials/paper-package-tutorial.html).
 
 ***
 
