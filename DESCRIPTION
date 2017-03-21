@@ -23,6 +23,7 @@ Imports:
     statnet.common,
     base64,
     plyr,
+    rJava,
     XLConnectJars
 License: GPL 2.0
 LazyData: TRUE
