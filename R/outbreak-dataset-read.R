@@ -5,6 +5,8 @@
 #' of two types now.
 #'
 #' @param xlsx.file Full file path to where xlsx Outbreak dataset is stored.
+#' @param attempt.imputation Boolean detailing whether to impute data. If NULL(default),
+#' user will be asked with a line prompt, if TRUE then it will automatically happen
 #' @param fill.in.end.infection.hours Boolean detailing whether to fill in empty end infection hours. Will be needed
 #' if \code{outbreak_dataset_read} throws an error associated with missing data.
 #' @export
@@ -12,7 +14,10 @@
 #'
 #'
 
-outbreak_dataset_read <- function(xlsx.file, fill.in.end.infection.dates=FALSE){
+outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end.infection.dates=FALSE){
+
+  ## Variable checking
+  if(!is.null(attempt.imputation) && !isTRUE(attempt.imputation)) stop("attempt.imputation parameter not NULL or TRUE")
 
   # read in .xlsx file of data - see inst/extdata/paper.txt for example formatting with names removed
   df <- XLConnect::readWorksheetFromFile(xlsx.file,sheet=1,startRow = 2,endCol = 20,colTypes=c(rep("character",15),rep("character",5)),useCachedValues=T)
@@ -44,20 +49,127 @@ outbreak_dataset_read <- function(xlsx.file, fill.in.end.infection.dates=FALSE){
 
   df$Reinfection <- as.logical(df$Reinfection)
 
-  ## ERROR CHECKING
+  ## ERROR CHECKING ##
+  ## --------------------------------------------------------------------------
+
+  # If we have decided to error check
   if(fill.in.end.infection.dates==FALSE){
+
+    # first work out the non reinfections
     non.reinfections <- which(df$Reinfection==FALSE)
+
+    ## ERROR CHECK 1: Looking for empty end infections
+    ## --------------------------------------------------------------------------
+
     wrong_rows <- non.reinfections[which(is.na(df$End_Infection_Hours.since.start[non.reinfections]))]
-    if(length(wrong_rows)>0) stop (paste("End Infection Hours since start column missing data at rows",paste(wrong_rows+2,collapse=", ")))
+
+    # if we are missing some end infections
+    if(length(wrong_rows)>0){
+
+      error.message <- paste("End Infection Hours since start column missing data at rows:\n",paste(wrong_rows+2,collapse=", "))
+
+      ## check user input for yes/no
+      if(is.null(attempt.imputation)){
+      yes.no.check <- 0
+      while(yes.no.check==0){
+        attempt.imputation <- readline(prompt=paste0(error.message,". \nWould you like to attempt data imputation?\n",
+                                                     "Enter \"No\" to stop and manually review dataset or \"Yes\" to attempt data imputation"))
+
+        ## check response
+        if(is.element(attempt.imputation,c("NO","no","No","YES","yes","YEs","Yes","yES","yeS"))){
+          yes.no.check <- 1
+        } else {
+          message("Yes or no not given.")
+        }
+
+      }
+      } else {
+        attempt.imputation <- "Yes"
+      }
+
+      ## If they selected for imputation
+      if(length(grep(attempt.imputation,"Yes",ignore.case = T))>0){
+
+        ## Imputation
+
+        for(i in wrong_rows){
+
+          ## First, does the missing data not have a parent, otherwise we work out the most likely parent
+          if(is.na(df$Parent.ID[i])){
+
+          ## first what's the beinning infection hour and if it's not there then quit
+          begin.inf <- df$Infection_Hours.since.start[i]
+          if(!is.numeric(begin.inf)) stop("Data can't be imputed for end of infection if beginning is not known")
+
+          # which individuals had infection times before this and hadn't already ended their infection
+          possible.rows <- intersect(which(df$End_Infection_Hours.since.start > begin.inf),
+                                     which(df$Infection_Hours.since.start < begin.inf))
+
+          # then let's see of these how many did they infect and probabilistically given the poisson distribution who is most
+          # likely to have infected another individual
+
+          # recorded attempted, which will use for the dpois bounds and then find out which attempted infections
+          # for the possible rows is most likly to have occured if it was +1
+          attempted.infections <- df$Attempted.[possible.rows]
+          att.inf.range <- sort(unique(attempted.infections))
+          sorted.probs <- sort.int((dpois(att.inf.range + 1,1.8)),decreasing = TRUE,index.return = T)$ix
+
+          # Which possible rows have the greatest chance of having another infection
+          more.possible.rows <- possible.rows[which(attempted.infections==(att.inf.range[sorted.probs[1]]))]
+
+          # If more than one row is still here then sample
+          if(length(more.possible.rows)>1){
+            imputed.parent.row <- sample(more.possible.rows,size = 1)
+          } else {
+            imputed.parent.row <- more.possible.rows
+          }
+
+          # Fill in the blank parent row
+          df$Parent.ID[i] <- df$ID[imputed.parent.row]
+
+          # if the newly chosen parent did not have an onward infection then add the onward infection time
+          if(is.na(df$Onward_Infection_Hours.since.start[imputed.parent.row])){
+            df$Onward_Infection_Hours.since.start[imputed.parent.row] <- df$Infection_Hours.since.start[i]
+          }
+
+          # If the parent was known just found the row for later
+          } else {
+            imputed.parent.row <- which(df$ID == df$Parent.ID[i])
+          }
+
+          # Second, pick a likely time between the individuals infection begin and end infection and round to 2dp
+          df$End_Infection_Hours.since.start[i] <- round(runif(1,min=df$Infection_Hours.since.start[i],
+                                                               max=df$End_Infection_Hours.since.start[imputed.parent.row]),
+                                                         digits = 2)
+
+        }
+        ## If they did not select for imputation then quit
+      } else {
+        stop (paste0("Stopping data read in. ",error.message))
+      }
+
+    }
+
+    ## ERROR CHECK 2: Looking for empty begin infections
+    ## --------------------------------------------------------------------------
     wrong_rows <- non.reinfections[which(is.na(df$Infection_Hours.since.start[non.reinfections]))]
     if(length(wrong_rows)>0) stop (paste("Begin Infection Hours since start column missing data at rows",paste(wrong_rows+2,collapse=", ")))
+
+    ## ERROR CHECK 3: Looking for missing onward infection times given known parent ids for these individuals exist
+    ## --------------------------------------------------------------------------
     wrong_rows <- non.reinfections[which(is.na(df$Onward_Infection_Hours.since.start[match(df$Parent.ID[non.reinfections][!is.na(df$Parent.ID[non.reinfections])],df$ID)]))]
     if(length(wrong_rows)>0) stop (paste("Missing time of onward infection information for individuals who cause non-reinfection infections at rows",paste(wrong_rows+2,collapse=", ")))
+
+    # If we have decided not to error check then simply fill the end infection hours in
   } else {
     non.reinfections <- which(df$Reinfection==FALSE)
     wrong_rows <- non.reinfections[which(is.na(df$End_Infection_Hours.since.start[non.reinfections]))]
     df$End_Infection_Hours.since.start[wrong_rows] <- max(df$End_Infection_Hours.since.start,na.rm=TRUE)
+
+    ## Something to do with parents
+    ## TODO:
   }
+
   # Nice format times to remove the years
   df$Infection_Time <- strftime(strptime(x = as.character(df$Infection_Time),format = "%H.%M"),"%H:%M:%S")
   df$Symptoms_Time <- strftime(strptime(x = as.character(df$Symptoms_Time),format = "%H.%M"),"%H:%M:%S")
@@ -77,9 +189,11 @@ outbreak_dataset_read <- function(xlsx.file, fill.in.end.infection.dates=FALSE){
   error.pos <- which(df$Generation_Time_Hours<0)
   if(length(error.pos)>0){
 
+    catch = 1
+
     df$Generation_Time_Hours[df$Generation_Time_Hours<0] <- NA
-    message(paste("Warning: Some negative generation times were recorded and subsequently
-              removed. Please check rows ",paste(error.pos,collapse = ", ")))
+    message(paste("Warning: Some negative generation times were recorded and subsequently",
+              "removed. Please check rows: \n ",paste(error.pos+2,collapse = ", ")))
 
   }
 

@@ -19,7 +19,7 @@
 infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,iterations = 10000){
 
   # convert into graph
-  outbreak.graph <- igraph::graph_from_data_frame(d = first_infection_list$contacts,directed = TRUE,
+  outbreak.graph <- igraph::graph_from_data_frame(first_infection_list$contacts,directed = TRUE,
     vertices = first_infection_list$linelist)
 
 
@@ -58,7 +58,10 @@ infection_network_plot <- function(first_infection_list, time = TRUE,log=TRUE,it
 
     # next because thus layout algorithm is not very good we will loop it until it correctly levels the tree
     # the correct number of levels can be calculated as follows:
-    correct.levels <- max(unlist(lapply(igraph::all_simple_paths(outbreak.graph,from = seeds),length)))
+    correct.levels <- max(unlist(lapply(igraph::all_simple_paths(outbreak.graph,from = seeds[1]),length)))
+    for(i in 2:length(seeds)){
+    correct.levels <- max(correct.levels,max(unlist(lapply(igraph::all_simple_paths(outbreak.graph,from = seeds[i]),length))))
+    }
 
     tree <- cbind(c(0,0),c(0,0))
     while(length(unique(tree[,2]))<=correct.levels){

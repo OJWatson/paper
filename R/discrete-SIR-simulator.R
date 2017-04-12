@@ -27,51 +27,51 @@
 #'
 #'
 
-discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
-                                   first_infection_list, outbreak.dataset,
-                                   sampling = FALSE, exponential = FALSE){
+discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, first_infection_list,
+                                   outbreak.dataset, sampling = FALSE, exponential = FALSE)
+{
 
-  # Initial conditions
-  # If no N is provided, then the total population is the same as the provided datasets
-  if(is.null(N)){
+  # Initial conditions If no N is provided, then the total population is the same
+  # as the provided datasets
+  if (is.null(N))
+  {
     N <- max(outbreak.dataset$ID)
-    seed.hour <- min(first_infection_list$linelist$Infection_Hours.since.start,na.rm=T)
+    seed.hour <- min(first_infection_list$linelist$Infection_Hours.since.start,
+                     na.rm = T)
   }
+
+  # Set S and R
   S <- N - I
   R <- 0
 
   # Create vector of all discrete times from 0 to end of infection list
-  times <- sort(c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start,na.rm = TRUE),seed.hour))
+  times <- sort(c(0:max(first_infection_list$linelist$End_Infection_Hours.since.start,
+                        na.rm = TRUE), seed.hour))
 
   # Create result vectors
-  Sv <- rep(S,length(times))
-  Iv <- rep(I,length(times))
-  Rv <- rep(R,length(times))
-
-  # Create vector of recovery times from the infection list
-  Recovery_Times <- outbreak.dataset$End_Infection_Hours.since.start - outbreak.dataset$Infection_Hours.since.start
-
-  # Remove the NAs
-  Recovery_Times <- Recovery_Times[!is.na(Recovery_Times)]
+  Sv <- rep(S, length(times))
+  Iv <- rep(I, length(times))
+  Rv <- rep(R, length(times))
 
   # Create vector of generation times from the outbreak dataset
   Generation_Times <- outbreak.dataset$Generation_Time_Hours
-
   # Remove the NAs
   Generation_Times <- Generation_Times[!is.na(Generation_Times)]
 
-  # Create vector of generation times from the outbreak dataset
-  Incubation_Times <- outbreak.dataset$Incubation_Period_Hours
+  # Create vector of infectious period hours
+  Infectious_Times <- outbreak.dataset$Infectious_Period_Hours
+  # Remove the NAs
+  Infectious_Times <- Infectious_Times[!is.na(Infectious_Times)]
 
   ## Distribtuion means for recovery, generation times
-  mean.recovery.time <- mean(Recovery_Times,na.rm=T)  ## mean for poisson distribution describing average recovery time in hours
-  mean.generation.time <- mean(Generation_Times,na.rm = T)  ## mean for poisson distribution describing average generation time in hours
+  mean.generation.time <- mean(Generation_Times, na.rm = T)  ## mean for poisson distribution describing average generation time in hours
+  mean.infectious.time <- mean(Infectious_Times, na.rm = T)  ## mean for poisson distribution describing average recovery time in hours
 
-  ## Handle seed time if provided
-  ## start at start seed time
-  if(is.numeric(seed.hour)){
+  ## Handle seed time if provided start at start seed time
+  if (is.numeric(seed.hour))
+  {
     start <- seed.hour
-    seed.vp <- match(seed.hour,times)
+    seed.vp <- match(seed.hour, times)
     Sv[1:(seed.vp - 1)] <- N
     Iv[1:(seed.vp - 1)] <- 0
   } else {
@@ -82,52 +82,123 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
   end <- max(times)
 
   ## Initialisation
-  if(exponential==FALSE){
-    possible.new.infections <- sum(rpois(n=I,lambda=R0))
-    prob_of_succesful_contact <- (S : (S-possible.new.infections+1))/N
-    prob_of_succesful_contact[prob_of_succesful_contact<0] <- 0
-    new.infections <-  sum(sapply(X = prob_of_succesful_contact,function(x){return(rbinom(n = 1,size = 1,prob = x))}))
+
+  ## If exponential we want to weight the probability of an infection occurring by
+  ## the proportion of uninfected contacts
+  if (exponential == FALSE)
+  {
+
+    # First let's draw how many infections could occur from the number of infected
+    # seeds
+    possible.new.infections <- rpois(n = I, lambda = R0)
+
+    # Then let's work out the probability that those infections occur, as S/N and
+    # then remove any that are negative, i.e. S < 0
+    prob_of_succesful_contact <- (S:(S - sum(possible.new.infections) + 1))/N
+    prob_of_succesful_contact[prob_of_succesful_contact < 0] <- 0
+
+    # Now for each probability of infection let's draw whether the infection happened
+    new.infections <- sapply(X = prob_of_succesful_contact, function(x)
+    {
+      return(rbinom(n = 1, size = 1, prob = x))
+    })
+
+    ## We will now need to readjust the possible new infections in light of any failed
+    ## succesful contacts.  For this we will create a cumulative infections counter,
+    ## and then work along the probability of succesful contacts vector increasing the
+    ## cumulative infections counter as we go along
+
+    cum.infs <- 0
+    # looping through the possible infections vector
+    for (inf in 1:length(possible.new.infections))
+    {
+      # if this individual had infections let's decide how many were succesful
+      if (possible.new.infections[inf] > 0)
+      {
+        # update the possible infections to be the sum of the new.infections vector
+        # positions that relate to the possible infections, i.e. if the first
+        # possible.ne.infections vector element is 2 we will want new.infections[1:2],
+        # and then next time we will look to new.infections[3:...]
+        possible.new.infections[inf] <- sum(new.infections[(cum.infs + 1):(cum.infs + possible.new.infections[inf])])
+
+        # update our cumulative counter
+        cum.infs <- cum.infs + possible.new.infections[inf]
+      }
+    }
+    ## If it's not exponential then simply draw the infections
   } else {
-    new.infections <- sum(rpois(n = I,lambda = R0))
+    new.infections <- rpois(n = I, lambda = R0)
   }
 
-  if(sampling == TRUE){
-    infection.times <- round(sample(x = Generation_Times,size=new.infections,replace = T) + ceiling(start))
-    recovery.times <- round(sample(x = Recovery_Times,size=I,replace = T) + ceiling(start))
+  ## If we are sampling then draw infection and recovery times (here defined as the
+  ## time from infectiousness to recovery) from the observed
+  if (sampling == TRUE)
+  {
+    # loop through the infections and generate generation times for each set of infections from those who were infected today
+    infection.times <- lapply(possible.new.infections, function(x)
+    {
+      return(sort(round(sample(Generation_Times, size = x, replace = T) + ceiling(start))))
+    })
+
+    # loop through the infection times and generate recovery times as the infectious period plus the last, i.e. max, infection
+    # if there were no infections from an infected individual then add the infectious period to the current time
+    recovery.times <- unlist(lapply(infection.times, function(x)
+    {
+      return(round(sample(x = Infectious_Times, size = 1, replace = T) + ifelse(length(x) > 0, max(x), ceiling(start))))
+    }))
+
+    infection.times <- unlist(infection.times)
+    ## If not sampling then we simply draw from the poisson with the mean equal to the
+    ## mean of the observed
   } else {
-    infection.times <- rpois(new.infections,lambda = mean.generation.time) + ceiling(start)
-    recovery.times <- rpois(I,lambda = mean.recovery.time) + ceiling(start)
+    infection.times <- lapply(possible.new.infections, function(x)
+    {
+      return(sort(round(rpois(x, lambda = mean.generation.time) + ceiling(start))))
+    })
+
+    recovery.times <- unlist(lapply(infection.times, function(x)
+    {
+      return(round(rpois(1, lambda = mean.infectious.time) + ifelse(length(x) > 0, max(x), ceiling(start))))
+    }))
+
+    infection.times <- unlist(infection.times)
   }
 
-  next.event <- min(c(infection.times,recovery.times))
-  if(next.event!=start){
+  ## Calculate the next event and update start timer
+  next.event <- min(c(infection.times, recovery.times))
+  if (next.event != ceiling(start))
+  {
     start <- start + 1
   }
 
   # create boolean to end simulation early if it is finished
-  stop_simulation = FALSE
+  stop_simulation <- FALSE
 
   ## Main loop
-  for (current.hour in ceiling(start):end ){
+  for (current.hour in ceiling(start):end)
+  {
 
     ## for reproducibility this is done in case non discrete time steps are to be used
-    vp <- match(current.hour,times)
+    vp <- match(current.hour, times)
 
     ## Copy last hour initially
-    Sv[vp] <- Sv[vp-1]
-    Iv[vp] <- Iv[vp-1]
-    Rv[vp] <- Rv[vp-1]
+    Sv[vp] <- Sv[vp - 1]
+    Iv[vp] <- Iv[vp - 1]
+    Rv[vp] <- Rv[vp - 1]
 
-    if(sum(Sv[vp],Iv[vp],Rv[vp]) != N){
+    if (sum(Sv[vp], Iv[vp], Rv[vp]) != N)
+    {
       stop("N not constant")
     }
 
     ## if there is an event for the day
-    if(next.event == current.hour){
+    if (next.event == current.hour)
+    {
 
       ## handle infection next event
       ## -----------------------------------------------------------------------------------------------
-      while(is.element(current.hour,infection.times)){
+      while (is.element(current.hour, infection.times))
+      {
 
         # How many people are being infected now
         now.infections <- sum(infection.times == current.hour)
@@ -139,43 +210,111 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
         Sv[vp] <- Sv[vp] - now.infections
         Iv[vp] <- Iv[vp] + now.infections
 
-        # Work out what time those infected in this hour will recover
-        if(sampling == TRUE){
-          recovery.times <- c(recovery.times , round(sample(x = Recovery_Times,size=now.infections,replace = T) + current.hour))
+        ############## If exponential we want to weight the probability of an infection occurring by
+        ############## the proportion of uninfected contacts
+        if (exponential == FALSE)
+        {
+
+          # First let's draw how many infections could occur from the number of infected
+          # seeds
+          possible.new.infections <- rpois(n = now.infections, lambda = R0)
+
+          # Then let's work out the probability that those infections occur, as S/N and
+          # then remove any that are negative, i.e. S < 0
+          prob_of_succesful_contact <- (Sv[vp]:(Sv[vp] - sum(possible.new.infections) + 1))/N
+          prob_of_succesful_contact[prob_of_succesful_contact < 0] <- 0
+
+          # Now for each probability of infection let's draw whether the infection happened
+          new.infections <- sapply(X = prob_of_succesful_contact, function(x)
+          {
+            return(rbinom(n = 1, size = 1, prob = x))
+          })
+
+          ## We will now need to readjust the possible new infections in light of any failed
+          ## succesful contacts.  For this we will create a cumulative infections counter,
+          ## and then work along the probability of succesful contacts vector increasing the
+          ## cumulative infections counter as we go along
+
+          cum.infs <- 0
+          # looping through the possible infections vector
+          for (inf in 1:length(possible.new.infections))
+          {
+            # if this individual had infections let's decide how many were succesful
+            if (possible.new.infections[inf] > 0)
+            {
+              # update the possible infections to be the sum of the new.infections vector
+              # positions that relate to the possible infections, i.e. if the first
+              # possible.ne.infections vector element is 2 we will want new.infections[1:2],
+              # and then next time we will look to new.infections[3:...]
+              possible.new.infections[inf] <- sum(new.infections[(cum.infs + 1):(cum.infs + possible.new.infections[inf])])
+
+              # update our cumulative counter
+              cum.infs <- cum.infs + possible.new.infections[inf]
+            }
+          }
+          ## If it's not exponetial then simply draw the infections
         } else {
-          recovery.times <- c(recovery.times , rpois(n = now.infections,lambda=mean.recovery.time) + current.hour)
+          new.infections <- rpois(n = now.infections, lambda = R0)
         }
 
+        ## If we are sampling then draw infection and recovery times (here defined as the
+        ## time from infectiousness to recovery) from the observed
+        if (sampling == TRUE)
+        {
+          # loop through the infections and generate generation times for each set of infections from those who were infected today
+          infection.times.new <- lapply(possible.new.infections, function(x)
+          {
+            return(sort(round(sample(Generation_Times, size = x, replace = T) + current.hour)))
+          })
 
-        # First work out how many new infections would arise from the infections that
-        # occured in this hour, and what their times would be
-        if(exponential==FALSE){
-          possible.new.infections <- sum(rpois(n=now.infections,lambda=R0))
-          prob_of_succesful_contact <- (Sv[vp] : (Sv[vp]-possible.new.infections+1))/N
-          prob_of_succesful_contact[prob_of_succesful_contact<0] <- 0
-          new.infections <-  sum(sapply(X = prob_of_succesful_contact,function(x){return(rbinom(n = 1,size = 1,prob = x))}))
+
+          # loop through the infection times and generate recovery times as the infectious period plus the last, i.e. max, infection
+          # if there were no infections from an infected individual then add the infectious period to the current time
+          recovery.times.new <- unlist(lapply(infection.times.new, function(x)
+          {
+            return(round(sample(x = Infectious_Times, size = 1, replace = T) + ifelse(length(x) > 0, max(x), current.hour)))
+          }))
+
+          infection.times <- c(infection.times, unlist(infection.times.new))
+          recovery.times <- c(recovery.times, recovery.times.new)
+
+          ## If not sampling then we simply draw from the poisson with the mean equal to the
+          ## mean of the observed
         } else {
-          new.infections <- sum(rpois(n = now.infections,lambda = R0))
+
+          # loop through the infections and generate generation times for each set of infections from those who were infected today
+          infection.times.new <- lapply(possible.new.infections, function(x)
+          {
+            return(sort(round(rpois(x, lambda = mean.generation.time) + current.hour)))
+          })
+
+
+          # loop through the infection times and generate recovery times as the infectious period plus the last, i.e. max, infection
+          # if there were no infections from an infected individual then add the infectious period to the current time
+          recovery.times.new <- unlist(lapply(infection.times.new, function(x)
+          {
+            return(round(rpois(1, lambda = mean.infectious.time) + ifelse(length(x) > 0, max(x), current.hour)))
+          }))
+
+          infection.times <- c(infection.times, unlist(infection.times.new))
+          recovery.times <- c(recovery.times, recovery.times.new)
         }
+        ##############
 
-
-        if(sampling == TRUE){
-          infection.times <- c(infection.times , round(sample(x = Generation_Times,size=new.infections,replace = T) + current.hour))
-        } else {
-          infection.times <- c(infection.times , rpois(n = new.infections,lambda=mean.generation.time) + current.hour)
-        }
-
-        # If there are more infection times than people to infect, then sort the infection times and
-        # take the earliest x, where x is the number of susceptibles left
-        if(length(infection.times) > Sv[vp]){
-          infection.times <- head(sort(infection.times),Sv[vp])
+        # If there are more infection times than people to infect, then sort the
+        # infection times and take the earliest x, where x is the number of susceptibles
+        # left
+        if (length(infection.times) > Sv[vp])
+        {
+          infection.times <- head(sort(infection.times), Sv[vp])
         }
 
       }
 
       ## handle recovery next event
       ## -----------------------------------------------------------------------------------------------
-      if(is.element(current.hour,recovery.times)){
+      if (is.element(current.hour, recovery.times))
+      {
 
         # How many people are recovering now
         new.recoveries <- sum(recovery.times == current.hour)
@@ -190,22 +329,23 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
       }
 
       ## update next event or break out of sim loop if no more events
-      if(length(c(infection.times,recovery.times))==0){
+      if (length(c(infection.times, recovery.times)) == 0)
+      {
 
         ## if we are on the last time step then we don't do this
-        if(vp != length(times)){
-          Sv[(vp+1) : (end+1)] <- Sv[vp]
-          Iv[(vp+1) : (end+1)] <- Iv[vp]
-          Rv[(vp+1) : (end+1)] <- Rv[vp]
+        if (vp != length(times))
+        {
+          Sv[(vp + 1):length(Sv)] <- Sv[vp]
+          Iv[(vp + 1):length(Iv)] <- Iv[vp]
+          Rv[(vp + 1):length(Rv)] <- Rv[vp]
         }
-        stop_simulation = TRUE
+        stop_simulation <- TRUE
 
       }
-      if(stop_simulation) break
+      if (stop_simulation) break
 
       ## find out next event time
-      next.event <- min(c(infection.times,recovery.times))
-
+      next.event <- min(c(infection.times, recovery.times))
 
     }
 
@@ -213,15 +353,6 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL,
   }
 
   # return results
-  test = TRUE
-  if(test){
-    a = 1
-    if(length(Sv)>length(times)){
-      a=2
-    }
-  }
-
-  return(data.frame(Sv,Iv,Rv,times))
+  return(data.frame(Sv, Iv, Rv, times))
 
 }
-

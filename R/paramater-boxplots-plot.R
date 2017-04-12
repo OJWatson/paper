@@ -26,7 +26,7 @@ paramater_boxplots_plot <- function(outbreak.dataset,title=NULL,
                            id=c("ID"))
 
   # create initial boxplot
-  gg <- ggplot2::ggplot(melted) + ggplot2::geom_boxplot(ggplot2::aes(x=variable,y=value))
+  gg <- ggplot2::ggplot(melted) + ggplot2::geom_boxplot(ggplot2::aes(x=variable,y=value),outlier.shape = NA)
 
   # add overlay of raw data and make pretty
   res <- gg + ggplot2::geom_point(ggplot2::aes(x=variable,y=value,alpha=alpha),
