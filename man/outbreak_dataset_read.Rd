@@ -5,7 +5,7 @@
 \title{Read in and remove sensitive data}
 \usage{
 outbreak_dataset_read(xlsx.file, attempt.imputation = FALSE,
-  fill.in.end.infection.dates = FALSE)
+  fill.in.end.infection.hours = FALSE)
 }
 \arguments{
 \item{xlsx.file}{Full file path to where xlsx Outbreak dataset is stored.}

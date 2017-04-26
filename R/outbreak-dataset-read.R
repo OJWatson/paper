@@ -14,7 +14,7 @@
 #'
 #'
 
-outbreak_dataset_read <- function(xlsx.file,attempt.imputation=FALSE, fill.in.end.infection.dates=FALSE){
+outbreak_dataset_read <- function(xlsx.file,attempt.imputation=FALSE, fill.in.end.infection.hours=FALSE){
 
   # read in .xlsx file of data - see inst/extdata/paper.txt for example formatting with names removed
   df <- XLConnect::readWorksheetFromFile(xlsx.file,sheet=1,startRow = 2,endCol = 20,colTypes=c(rep("character",15),rep("character",5)),useCachedValues=T)
