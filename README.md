@@ -11,6 +11,8 @@ Paper is a package designed to assist in demonstration of analysis associated to
 
 ***
 
+In addition, there is an updated google form version of the infection form that went with the practical, which can be located [here](https://drive.google.com/open?id=0B0-wM-jL1G-Sb2NiRU1DbDJWZGs).
+
 ### Installing *paper*
 
 To install the development version from github the package [*devtools*](https://github.com/hadley/devtools) is required.
