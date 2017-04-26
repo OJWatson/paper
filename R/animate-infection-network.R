@@ -51,11 +51,11 @@ animate_infection_network <- function(first_infection_list, file, year=NULL, det
   paper.net.dyn <- networkDynamic::networkDynamic(
     base.net = paper.net,
     edge.spells=data.frame("onset" = first_infection_list$contacts$Infection_Hours.since.start,
-                           "terminus" = range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2],
+                           "terminus" = range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2]+0.5,
                            "tail"=first_infection_list$contacts$From,
                            "head"=first_infection_list$contacts$To),
     vertex.spells=data.frame(onset=0,
-                             terminus=range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2],
+                             terminus=range(first_infection_list$linelist$End_Infection_Hours.since.start,finite=T)[2]+0.5,
                              vertex.id=1:dim(first_infection_list$linelist)[1])
   )
 
