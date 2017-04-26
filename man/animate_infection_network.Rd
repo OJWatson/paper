@@ -4,12 +4,15 @@
 \alias{animate_infection_network}
 \title{Creates interactive html file with d3 network animation}
 \usage{
-animate_infection_network(first_infection_list, file, detach = FALSE)
+animate_infection_network(first_infection_list, file, year = NULL,
+  detach = FALSE)
 }
 \arguments{
 \item{first_infection_list}{Infection list outputted by \code{first_infection_list}.}
 
 \item{file}{Full file path where html is to be saved to.}
+
+\item{year}{Year the outbreak relates to for title plotting. Default = NULL}
 
 \item{detach}{Boolean that detaches the packages loaded within the library.
 Deafult = FALSE, i.e. packages remain in Global Environment.}

@@ -30,11 +30,11 @@ paramater_boxplots_plot <- function(outbreak.dataset,title=NULL,
 
   # add overlay of raw data and make pretty
   res <- gg + ggplot2::geom_point(ggplot2::aes(x=variable,y=value,alpha=alpha),
-                                  position = ggplot2::position_jitter(width = jitter.width), na.rm = T) +
+                                  position = ggplot2::position_jitter(width = jitter.width),na.rm = T, size = 0.8) +
     ggplot2::ylab("Time (hours)") +
     ggplot2::theme_classic() + ggplot2::theme_light() +
     ggplot2::scale_x_discrete(limit = c("Latent_Period_Hours","Incubation_Period_Hours","Infectious_Period_Hours","Generation_Time_Hours"),
-                              labels = c("Latent Period","Incubation Period","Infectious Period","Generation Time"),
+                              labels = c("Latent\nPeriod","Incubation\nPeriod","Infectious\nPeriod","Generation\nTime"),
                               name = "Group") +
     ggplot2::theme(legend.position="none",
                    axis.title.x = ggplot2::element_blank(),

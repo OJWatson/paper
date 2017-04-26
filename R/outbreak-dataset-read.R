@@ -5,8 +5,8 @@
 #' of two types now.
 #'
 #' @param xlsx.file Full file path to where xlsx Outbreak dataset is stored.
-#' @param attempt.imputation Boolean detailing whether to impute data. If NULL(default),
-#' user will be asked with a line prompt, if TRUE then it will automatically happen
+#' @param attempt.imputation Boolean detailing whether to impute data. If FALSE (default),
+#' no imputation will occur but if TRUE then it will automatically happen
 #' @param fill.in.end.infection.hours Boolean detailing whether to fill in empty end infection hours. Will be needed
 #' if \code{outbreak_dataset_read} throws an error associated with missing data.
 #' @export
@@ -14,13 +14,13 @@
 #'
 #'
 
-outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end.infection.dates=FALSE){
-
-  ## Variable checking
-  if(!is.null(attempt.imputation) && !isTRUE(attempt.imputation)) stop("attempt.imputation parameter not NULL or TRUE")
+outbreak_dataset_read <- function(xlsx.file,attempt.imputation=FALSE, fill.in.end.infection.dates=FALSE){
 
   # read in .xlsx file of data - see inst/extdata/paper.txt for example formatting with names removed
   df <- XLConnect::readWorksheetFromFile(xlsx.file,sheet=1,startRow = 2,endCol = 20,colTypes=c(rep("character",15),rep("character",5)),useCachedValues=T)
+
+  # grab seed positions
+  seeds <- which(df$Parent.ID=="Seed")
 
   # Handle for other type of excel sheet provided
   if(is.element("Hours.since.start.4",names(df))){
@@ -38,7 +38,8 @@ outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end
 
   } else {
 
-    df[,c(1,2,6,9,12,13,14,15)] <- lapply(df[,c(1,2,6,9,12,13,14,15)],as.numeric)
+    # turn into useful numeric type, supressing warnings that throw due to characters in Parent.ID which are the seeds
+    df[,c(1,2,6,9,12,13,14,15)] <- suppressWarnings(lapply(df[,c(1,2,6,9,12,13,14,15)],as.numeric))
 
   }
 
@@ -53,43 +54,23 @@ outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end
   ## --------------------------------------------------------------------------
 
   # If we have decided to error check
-  if(fill.in.end.infection.dates==FALSE){
+  if(attempt.imputation==TRUE){
 
     # first work out the non reinfections
     non.reinfections <- which(df$Reinfection==FALSE)
 
-    ## ERROR CHECK 1: Looking for empty end infections
+    ## ERROR CHECK 1: Looking for empty end infections and missing parents
     ## --------------------------------------------------------------------------
 
-    wrong_rows <- non.reinfections[which(is.na(df$End_Infection_Hours.since.start[non.reinfections]))]
+    # find missing end infections and parents and then remove the seeds
+    wrong_rows <- non.reinfections[which(is.na(df$End_Infection_Hours.since.start[non.reinfections]) | is.na(df$Parent.ID[non.reinfections]))]
+    wrong_rows <- wrong_rows[-match(seeds,wrong_rows)]
 
     # if we are missing some end infections
     if(length(wrong_rows)>0){
 
-      error.message <- paste("End Infection Hours since start column missing data at rows:\n",paste(wrong_rows+2,collapse=", "))
-
-      ## check user input for yes/no
-      if(is.null(attempt.imputation)){
-      yes.no.check <- 0
-      while(yes.no.check==0){
-        attempt.imputation <- readline(prompt=paste0(error.message,". \nWould you like to attempt data imputation?\n",
-                                                     "Enter \"No\" to stop and manually review dataset or \"Yes\" to attempt data imputation"))
-
-        ## check response
-        if(is.element(attempt.imputation,c("NO","no","No","YES","yes","YEs","Yes","yES","yeS"))){
-          yes.no.check <- 1
-        } else {
-          message("Yes or no not given.")
-        }
-
-      }
-      } else {
-        attempt.imputation <- "Yes"
-      }
-
-      ## If they selected for imputation
-      if(length(grep(attempt.imputation,"Yes",ignore.case = T))>0){
-
+      error.message <- paste("End Infection Hours since start column missing data at rows:\n",paste(wrong_rows+2,collapse=", "),
+                             "\n Attempting Data Imputation...")
         ## Imputation
 
         for(i in wrong_rows){
@@ -137,16 +118,24 @@ outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end
             imputed.parent.row <- which(df$ID == df$Parent.ID[i])
           }
 
-          # Second, pick a likely time between the individuals infection begin and end infection and round to 2dp
-          df$End_Infection_Hours.since.start[i] <- round(runif(1,min=df$Infection_Hours.since.start[i],
-                                                               max=df$End_Infection_Hours.since.start[imputed.parent.row]),
-                                                         digits = 2)
+          # Second, if they don't have and end infection then pick a likely time
+          # between the individuals infection begin and end infection and round to 2dp
+          if(is.na(df$End_Infection_Hours.since.start[i])){
+
+          # if this indvidual caused secondary infections then they must have ended after this time
+          children <- which(df$Parent.ID == df$ID[i])
+          if(length(children > 1)){
+            min.start <- max(df$Infection_Hours.since.start[children],na.rm = T)
+          } else {
+            min.start <- df$Infection_Hours.since.start[i]
+          }
+          df$End_Infection_Hours.since.start[i] <- round(runif(1,min=min.start,
+                                                               max=min( df$Infection_Hours.since.start[i]+48,
+                                                                        max(df$End_Infection_Hours.since.start,na.rm=T))
+                                                               ), digits = 2)
+          }
 
         }
-        ## If they did not select for imputation then quit
-      } else {
-        stop (paste0("Stopping data read in. ",error.message))
-      }
 
     }
 
@@ -161,7 +150,7 @@ outbreak_dataset_read <- function(xlsx.file,attempt.imputation=NULL, fill.in.end
     if(length(wrong_rows)>0) stop (paste("Missing time of onward infection information for individuals who cause non-reinfection infections at rows",paste(wrong_rows+2,collapse=", ")))
 
     # If we have decided not to error check then simply fill the end infection hours in
-  } else {
+  } else if (fill.in.end.infection.dates == TRUE) {
     non.reinfections <- which(df$Reinfection==FALSE)
     wrong_rows <- non.reinfections[which(is.na(df$End_Infection_Hours.since.start[non.reinfections]))]
     df$End_Infection_Hours.since.start[wrong_rows] <- max(df$End_Infection_Hours.since.start,na.rm=TRUE)

@@ -59,13 +59,19 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
   Generation_Times <- Generation_Times[!is.na(Generation_Times)]
 
   # Create vector of infectious period hours
-  Infectious_Times <- outbreak.dataset$Infectious_Period_Hours
+  Infectious_Periods <- outbreak.dataset$Infectious_Period_Hours
   # Remove the NAs
-  Infectious_Times <- Infectious_Times[!is.na(Infectious_Times)]
+  Infectious_Periods <- Infectious_Periods[!is.na(Infectious_Periods)]
 
-  ## Distribtuion means for recovery, generation times
+  # Create vector of Recovery Times
+  Recovery_Times <- outbreak.dataset$End_Infection_Hours.since.start - outbreak.dataset$Infection_Hours.since.start
+  # Remove the NAs
+  Recovery_Times <- Recovery_Times[!is.na(Recovery_Times)]
+
+  ## Distribtuion means for recovery, generation and infectious times
   mean.generation.time <- mean(Generation_Times, na.rm = T)  ## mean for poisson distribution describing average generation time in hours
-  mean.infectious.time <- mean(Infectious_Times, na.rm = T)  ## mean for poisson distribution describing average recovery time in hours
+  mean.infectious.period <- mean(Infectious_Periods, na.rm = T)  ## mean for poisson distribution describing average infectious period in hours
+  mean.recovery.time <- mean(Recovery_Times, na.rm = T)  ## mean for poisson distribution describing average recovery time in hours
 
   ## Handle seed time if provided start at start seed time
   if (is.numeric(seed.hour))
@@ -144,7 +150,22 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
     # if there were no infections from an infected individual then add the infectious period to the current time
     recovery.times <- unlist(lapply(infection.times, function(x)
     {
-      return(round(sample(x = Infectious_Times, size = 1, replace = T) + ifelse(length(x) > 0, max(x), ceiling(start))))
+      recovery.time.greater.than.last.infection.check <- 0
+      while(recovery.time.greater.than.last.infection.check==0){
+
+        # did they not infect anyone, because if not then draw a recovery time
+        if(length(x)==0){
+          rec.time <- round(sample(x = Recovery_Times, size = 1, replace = T) + ceiling(start))
+          recovery.time.greater.than.last.infection.check <- 1
+          # if they infected anyone then draw their infectious period
+        } else {
+          rec.time <- round(sample(x = Infectious_Periods, size = 1, replace = T) + min(x))
+          if(rec.time > max(x)){
+            recovery.time.greater.than.last.infection.check <- 1
+          }
+        }
+      }
+      return(rec.time)
     }))
 
     infection.times <- unlist(infection.times)
@@ -158,7 +179,22 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
 
     recovery.times <- unlist(lapply(infection.times, function(x)
     {
-      return(round(rpois(1, lambda = mean.infectious.time) + ifelse(length(x) > 0, max(x), ceiling(start))))
+      recovery.time.greater.than.last.infection.check <- 0
+      while(recovery.time.greater.than.last.infection.check==0){
+
+        # did they not infect anyone, because if not then draw a recovery time
+        if(length(x)==0){
+          rec.time <- round(rpois(n = 1,lambda = mean.recovery.time) + ceiling(start))
+          recovery.time.greater.than.last.infection.check <- 1
+          # if they infected anyone then draw their infectious period
+        } else {
+          rec.time <- round(rpois(n=1, lambda = mean.infectious.period) + min(x))
+          if(rec.time > max(x)){
+            recovery.time.greater.than.last.infection.check <- 1
+          }
+        }
+      }
+      return(rec.time)
     }))
 
     infection.times <- unlist(infection.times)
@@ -272,7 +308,24 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
           # if there were no infections from an infected individual then add the infectious period to the current time
           recovery.times.new <- unlist(lapply(infection.times.new, function(x)
           {
-            return(round(sample(x = Infectious_Times, size = 1, replace = T) + ifelse(length(x) > 0, max(x), current.hour)))
+            recovery.time.greater.than.last.infection.check <- 0
+            while(recovery.time.greater.than.last.infection.check==0){
+
+              # did they not infect anyone, because if not then draw a recovery time
+              if(length(x)==0){
+                rec.time <- round(sample(x = Recovery_Times, size = 1, replace = T) + current.hour)
+                recovery.time.greater.than.last.infection.check <- 1
+                # if they infected anyone then draw their infectious period
+              } else {
+                rec.time <- round(sample(x = Infectious_Periods, size = 1, replace = T) + min(x))
+                if(rec.time > max(x)){
+                  recovery.time.greater.than.last.infection.check <- 1
+                }
+              }
+            }
+
+            return(rec.time)
+
           }))
 
           infection.times <- c(infection.times, unlist(infection.times.new))
@@ -293,7 +346,25 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
           # if there were no infections from an infected individual then add the infectious period to the current time
           recovery.times.new <- unlist(lapply(infection.times.new, function(x)
           {
-            return(round(rpois(1, lambda = mean.infectious.time) + ifelse(length(x) > 0, max(x), current.hour)))
+
+            recovery.time.greater.than.last.infection.check <- 0
+            while(recovery.time.greater.than.last.infection.check==0){
+
+              # did they not infect anyone, because if not then draw a recovery time
+              if(length(x)==0){
+                rec.time <- round(rpois(n = 1,lambda = mean.recovery.time) + current.hour)
+                recovery.time.greater.than.last.infection.check <- 1
+                # if they infected anyone then draw their infectious period
+              } else {
+                rec.time <- round(rpois(n = 1,lambda = mean.infectious.period) + min(x))
+                if(rec.time > max(x)){
+                  recovery.time.greater.than.last.infection.check <- 1
+                }
+              }
+            }
+
+            return(rec.time)
+
           }))
 
           infection.times <- c(infection.times, unlist(infection.times.new))

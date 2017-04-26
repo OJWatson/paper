@@ -4,17 +4,15 @@
 \alias{offspring_distribution_plot}
 \title{Plot offspring distribution}
 \usage{
-offspring_distribution_plot(outbreak.dataset, title = NULL,
-  include.unobserved.as.zero = FALSE)
+offspring_distribution_plot(outbreak.dataset, include.reinfectons = TRUE,
+  title = NULL)
 }
 \arguments{
 \item{outbreak.dataset}{Outbreak dataset outputted by \code{outbreak_dataset_read}}
 
-\item{title}{Plot title. Default = NULL}
+\item{include.reinfectons}{Boolean detailing whether to include reinfections. Default = TRUE}
 
-\item{include.unobserved.as.zero}{Boolean detailing whether idividuals who have not
-yet ended their infection by the end of the practical are included and as R0 = 0 occurences.
-Default = FALSE.}
+\item{title}{Plot title. Default = NULL}
 }
 \description{
 \code{offspring_distribution_plot} takes output of \code{outbreak_dataset_read} and

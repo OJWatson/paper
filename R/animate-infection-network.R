@@ -8,6 +8,7 @@
 #'
 #' @param first_infection_list Infection list outputted by \code{first_infection_list}.
 #' @param file Full file path where html is to be saved to.
+#' @param year Year the outbreak relates to for title plotting. Default = NULL
 #' @param detach Boolean that detaches the packages loaded within the library.
 #' Deafult = FALSE, i.e. packages remain in Global Environment.
 #'
@@ -16,7 +17,7 @@
 #'
 #'
 
-animate_infection_network <- function(first_infection_list, file, detach = FALSE){
+animate_infection_network <- function(first_infection_list, file, year=NULL, detach = FALSE){
 
   # if user has not provided .html file ending add ".html"
   if(tail(unlist(strsplit(file,".",fixed=T)),1) != "html"){
@@ -71,7 +72,7 @@ animate_infection_network <- function(first_infection_list, file, detach = FALSE
                        launchBrowser=T, filename=file,
                        render.par=list(tween.frames = 1, show.time = T),
                        plot.par=list(mar=c(0,0,0,0)),
-                       main = "Outbreak Dynamics 2016. Susceptible (blue), Infected (red), Recovered (green)",
+                       main = paste("Outbreak Dynamics",year,". Susceptible (blue), Infected (red), Recovered (green)"),
                        cex.main = 2)
 
 }

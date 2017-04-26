@@ -37,7 +37,7 @@ set the outbreak.dataset variable equal to paper.outbreak.2016.
 ```{r Loading the data, include=TRUE, message = FALSE, warning = FALSE}
 
 # First make sure the package is installed
-devtools::install_github("OJWatson/paper")
+#devtools::install_github("OJWatson/paper")
 
 # Load package - Warning messages will be thrown however these are not a problem
 library(paper)
@@ -46,7 +46,8 @@ library(paper)
 # This function will throw warnings highlighting rows where there may be errors in the excel file
 # Remember to replace the argument for xlsx.file to the local file path where your saved worksheet is
 # If it is on your desktop it will look something like xlsx.file = "C:/Users/Bob/Desktop/savedworksheet.xlsx"
-outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdata","2016_OUTBREAK.xlsx",package="paper"))
+outbreak.dataset <- paper::outbreak_dataset_read(xlsx.file = system.file("extdata","2016_solutions_final.xlsx",package="paper"),
+                                                 attempt.imputation = TRUE)
 
 # Visualise the dataset
 str(outbreak.dataset)
@@ -109,11 +110,12 @@ So far we have only been able to visualise the outbreak at discrete moments in
 time. To improve this we can also create an html page showing an animation of the
 outbreak process. (This will take a minute or two).
 
-```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center", cache=T}
+```{r Animate the infection network, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center", cache=TRUE}
 
 # Change the file parameter to wherever you want the html to be stored
   paper::animate_infection_network(first_infection_list=first_infection_list,
                             file=paste(getwd(),"/Animated-Network-Dynamic.html",sep=""),
+                            year=2016,
                             detach=FALSE)
                             
 ```
@@ -153,25 +155,24 @@ to generate the actual observed data.
 
 ```{r Offspring distribution, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
-paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset)
+paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset,include.reinfectons = TRUE,title = 2016)
 
 ```
 
-What we can see from above is the confirmed number of secondary cases from each individual. We have not observed
-any zero R0 values because from the nature of the practical it is hard to know exactly whether an individual infected 
-zero if they have not ended their infectious period. If we assume that everyone who was infected by yielded no
-secondary cases by th enf of the practical we can then observe potential values of R0 equal to 0.
+What we can see from above is the confirmed number of secondary cases from each individual,
+which has a mean very close to 1.8. However if we might also want to look at the distribution
+describing only the succesful contacts, i.e. those that led to infections rather than reinfections. 
 
 ```{r Offspring distribution with zero, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
-paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset, include.unobserved.as.zero = T)
+paper::offspring_distribution_plot(outbreak.dataset=outbreak.dataset, include.reinfectons = FALSE,title=2016)
 
 ```
 
 ## Simulated outbreaks
 
 It can often be very useful to see how this outbreak may compare to a simulated outbreak.
-To do this we can use the following function to simulate 2000 outbreaks and plot
+To do this we can use the following function to simulate 200 outbreaks and plot
 the interquartile range of these simulations: 
 
 ```{r Simulated outbreaks, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
@@ -182,7 +183,7 @@ paper::bootstrap_simulated_plot(
   lower.quantile=0.25,
   upper.quantile=0.75,
   include.observed = T,
-  replicates = 2000)
+  replicates = 200)
 
 ```
 
@@ -191,16 +192,19 @@ For these simulations we assume each simulation is seeded with three infections
 at the same time as the observed outbreak, and has a total population size equal to the 
 outbreak dataset. The number of secondary infections is then drawn from a Poisson 
 distribution with a mean of 1.8, as was used in the practical. The time of each 
-infection and recovery is also drawn from a Poisson with a mean equal to the observed 
-mean generation and recovery time respectively. Simulations are then stopped after 
-a period of time equal to the length of the observed outbreak.
+infection  is also drawn from a Poisson with a mean equal to the observed 
+mean generation times. The infected individual then recovers after a period of time, 
+which is sampled from a poisson with mean equal to the mean infectious period. 
+If they do not infect anyone then they recover after a period of time drawn from a 
+poisson with mean equal to the mean recovery time for the observed outbreak. 
+Simulations are then stopped after a period of time equal to the length of the observed outbreak.
 
 Given this simulation methodology we can start to hypothesise about why the simulated
 outbreaks are delayed when compared to the observed. If we look back at the box plots
 of the generation and recover times we can see that the data clearly does not 
 follow a Poisson distribution, but is multimodal with a period of approximately 
 2 hours. As a result we might choose to conduct the simulations again but sampling
-generation and recovery times from the observed outbreak:
+generation times, infectious periods and recovery times from the observed outbreak:
 
 ```{r Simulated outbreaks with sampling, include=TRUE, message = FALSE, warning = FALSE, fig.align = "center"}
 
@@ -210,17 +214,17 @@ paper::bootstrap_simulated_plot(
   lower.quantile = 0.25,
   upper.quantile = 0.75,
   include.observed = T,
-  replicates = 2000,
+  replicates = 200,
   sampling = TRUE)
 
 ```
 
 This simulation is much better, with the timing of the infection peak much closer
 to the observed data. This sampling method however still fails to perfectly capture the
-temporal dynamics exhibited. There are many reasons why this is, but perhaps most
-interesting is the clear lull in infections that happens on Wednesdays in the observed
-data (when the students have half days for sports matches), which is not captured
-by the simulation.
+temporal dynamics exhibited. There are many reasons why this is, but we can begin
+to understand why this is by simply seeing how many infections there are that occured on
+day 1, which is much larger than would be expected given 3 seeds and the generation
+times that we sampled. 
 
 ## Summary and further thoughts
 
