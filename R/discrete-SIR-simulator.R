@@ -133,7 +133,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
     }
     ## If it's not exponential then simply draw the infections
   } else {
-    new.infections <- rpois(n = I, lambda = R0)
+    possible.new.infections <- rpois(n = I, lambda = R0)
   }
 
   ## If we are sampling then draw infection and recovery times (here defined as the
@@ -159,11 +159,22 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
           recovery.time.greater.than.last.infection.check <- 1
           # if they infected anyone then draw their infectious period
         } else {
-          rec.time <- round(sample(x = Infectious_Periods, size = 1, replace = T) + min(x))
-          if(rec.time > max(x)){
+
+          # if we're sampling we have to catch if the infection times are too far apart to be captured by the infectious period
+          # so we first draw an infectious period, but if the sampled infection times are too far apart that the recorded infectious
+          # periods do not capture this then we resort to sampling a recovery time
+
+          if(diff(range(x)) > max(Infectious_Periods)){
+            rec.time <- round(sample(x = Recovery_Times[round(Recovery_Times)>=diff(range(x))], size = 1, replace = T) + ceiling(start))
+          } else {
+            rec.time <- round(sample(x = Infectious_Periods[Infectious_Periods>diff(range(x))], size = 1, replace = T) + min(x))
+          }
+
+          if(rec.time >= max(x)){
             recovery.time.greater.than.last.infection.check <- 1
           }
         }
+
       }
       return(rec.time)
     }))
@@ -189,7 +200,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
           # if they infected anyone then draw their infectious period
         } else {
           rec.time <- round(rpois(n=1, lambda = mean.infectious.period) + min(x))
-          if(rec.time > max(x)){
+          if(rec.time >= max(x)){
             recovery.time.greater.than.last.infection.check <- 1
           }
         }
@@ -290,7 +301,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
           }
           ## If it's not exponetial then simply draw the infections
         } else {
-          new.infections <- rpois(n = now.infections, lambda = R0)
+          possible.new.infections <- rpois(n = now.infections, lambda = R0)
         }
 
         ## If we are sampling then draw infection and recovery times (here defined as the
@@ -317,11 +328,22 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
                 recovery.time.greater.than.last.infection.check <- 1
                 # if they infected anyone then draw their infectious period
               } else {
-                rec.time <- round(sample(x = Infectious_Periods, size = 1, replace = T) + min(x))
-                if(rec.time > max(x)){
+
+                # if we're sampling we have to catch if the infection times are too far apart to be captured by the infectious period
+                # so we first draw an infectious period, but if the sampled infection times are too far apart that the recorded infectious
+                # periods do not capture this then we resort to sampling a recovery time
+
+                if(diff(range(x)) > max(Infectious_Periods)){
+                  rec.time <- round(sample(x = Recovery_Times[round(Recovery_Times)>=diff(range(x))], size = 1, replace = T) + current.hour)
+                } else {
+                  rec.time <- round(sample(x = Infectious_Periods[Infectious_Periods>diff(range(x))], size = 1, replace = T) + min(x))
+                }
+
+                if(rec.time >= max(x)){
                   recovery.time.greater.than.last.infection.check <- 1
                 }
               }
+
             }
 
             return(rec.time)
@@ -357,7 +379,7 @@ discrete_SIR_simulator <- function(R0 = 1.8, N = NULL, I = 3, seed.hour = NULL, 
                 # if they infected anyone then draw their infectious period
               } else {
                 rec.time <- round(rpois(n = 1,lambda = mean.infectious.period) + min(x))
-                if(rec.time > max(x)){
+                if(rec.time >= max(x)){
                   recovery.time.greater.than.last.infection.check <- 1
                 }
               }
